@@ -18,6 +18,8 @@ executable hs-model-check-demo
         , grisette
         , sbv < 12.0
     hs-source-dirs:   .
+    other-modules:
+          CalculatorDSL
     default-language: Haskell2010
     default-extensions:
           DeriveGeneric
