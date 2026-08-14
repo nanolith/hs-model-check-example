@@ -34,3 +34,6 @@ data Program = Program [Statement]
 
 -- Double symbolic type
 type SymDouble = SymFP64
+
+-- Data tag for supporting concrete interpretation
+data Concrete
