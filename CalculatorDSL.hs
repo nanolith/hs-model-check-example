@@ -1,6 +1,6 @@
 module CalculatorDSL where
 
-import Grisette (SymFP64)
+import Grisette (SymBool, SymFP64)
 
 -- Arithmetic expressions
 data Expression =
@@ -38,3 +38,8 @@ type SymDouble = SymFP64
 -- Data tags for supporting concrete and symbolic interpretation
 data Concrete
 data Symbolic
+
+type family HKD f a where
+    HKD Concrete a = a
+    HKD Symbolic Double = SymDouble
+    HKD Symbolic Bool = SymBool
