@@ -17,34 +17,44 @@ type family HKD f a where
     HKD Symbolic Bool = SymBool
 
 -- Arithmetic expressions
-data Expression =
-      Literal Double
+data Expression f =
+      Literal (HKD f Double)
     | Variable String
-    | Add Expression Expression
-    | Multiplication Expression Expression
-    | Divide Expression Expression
-    deriving (Eq, Show)
+    | Add (Expression f) (Expression f)
+    | Multiplication (Expression f) (Expression f)
+    | Divide (Expression f) (Expression f)
+
+deriving instance (Eq (HKD f Double)) => Eq (Expression f)
+deriving instance (Show (HKD f Double)) => Show (Expression f)
 
 -- Relational expressions
-data RelationalExpression =
-      Equal Expression Expression
-    | NotEqual Expression Expression
-    | LessThan Expression Expression
-    | LessThanEqual Expression Expression
-    | GreaterThan Expression Expression
-    | GreaterThanEqual Expression Expression
-    deriving (Eq, Show)
+data RelationalExpression f =
+      Equal (Expression f) (Expression f)
+    | NotEqual (Expression f) (Expression f)
+    | LessThan (Expression f) (Expression f)
+    | LessThanEqual (Expression f) (Expression f)
+    | GreaterThan (Expression f) (Expression f)
+    | GreaterThanEqual (Expression f) (Expression f)
+
+deriving instance (Eq (Expression f)) => Eq (RelationalExpression f)
+deriving instance (Show (Expression f)) => Show (RelationalExpression f)
 
 -- Statements
-data Statement =
-      Set String Expression
+data Statement f =
+      Set String (Expression f)
     | Unset String
-    | Assert RelationalExpression
-    deriving (Eq, Show)
+    | Assert (RelationalExpression f)
+
+deriving instance (Eq (Expression f), Eq (RelationalExpression f)) =>
+    Eq (Statement f)
+deriving instance (Show (Expression f), Show (RelationalExpression f)) =>
+    Show (Statement f)
 
 -- Program
-data Program = Program [Statement]
-    deriving (Eq, Show)
+data Program f = Program [Statement f]
+
+deriving instance (Eq (Statement f)) => Eq (Program f)
+deriving instance (Show (Statement f)) => Show (Program f)
 
 -- Calculator runtime state
 data CalculatorState f = CalculatorState {
