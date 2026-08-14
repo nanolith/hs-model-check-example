@@ -26,6 +26,7 @@ data Expression d =
       Literal (Val d)
     | Variable String
     | Add (Expression d) (Expression d)
+    | Subtract (Expression d) (Expression d)
     | Multiplication (Expression d) (Expression d)
     | Divide (Expression d) (Expression d)
 
@@ -98,10 +99,11 @@ type SymbolicState = CalculatorState Symbolic
 class (Show (Val d), Show (Cond d), Eq (Val d), Eq (Cond d)) => Domain d where
     literalValue    :: Double -> Val d
     addValue        :: Val d -> Val d -> Val d
+    subtractValue   :: Val d -> Val d -> Val d
     multiplyValue   :: Val d -> Val d -> Val d
     divideValue     :: Val d -> Val d -> Val d
     equalValue      :: Val d -> Val d -> Cond d
-    negativeZero    :: Val d -> Cond d
+    notEqualZero    :: Val d -> Cond d
     andConditional  :: Cond d -> Cond d -> Cond d
     trueConditional :: Cond d
 
@@ -112,3 +114,37 @@ initialState initialEnv = CalculatorState {
   , assertions            = trueConditional
   , safeDivideConditional = trueConditional
   }
+
+-- Evaluate an expression
+evalExpression :: Domain d => Expression d -> CalculatorState d
+        -> Either String (Val d, CalculatorState d)
+evalExpression expr st = case expr of
+  Literal n -> Right (n, st)
+
+  Variable name ->
+    case Map.lookup name $ unVarEnv $ env st of
+      Just val -> Right (val, st)
+      Nothing  -> Left $ "Scope Error: Variable '" ++ name ++ "' not found."
+
+  Add e1 e2 -> do
+    (v1, st1) <- evalExpression e1 st
+    (v2, st2) <- evalExpression e2 st1
+    Right (addValue v1 v2, st2)
+
+  Subtract e1 e2 -> do
+    (v1, st1) <- evalExpression e1 st
+    (v2, st2) <- evalExpression e2 st1
+    Right (subtractValue v1 v2, st2)
+
+  Multiplication e1 e2 -> do
+    (v1, st1) <- evalExpression e1 st
+    (v2, st2) <- evalExpression e2 st1
+    Right (multiplyValue v1 v2, st2)
+
+  Divide e1 e2 -> do
+    (v1, st1) <- evalExpression e1 st
+    (v2, st2) <- evalExpression e2 st1
+    let st3 = st2 {
+        safeDivideConditional =
+            andConditional (safeDivideConditional st2) (notEqualZero v2) }
+    Right (divideValue v1 v2, st3)
