@@ -15,6 +15,8 @@ executable hs-cscope-extract
     main-is:          Main.hs
     build-depends:
           base
+        , grisette
+        , sbv < 12.0
     hs-source-dirs:   .
     default-language: Haskell2010
     default-extensions:
