@@ -105,6 +105,7 @@ class (Show (Val d), Show (Cond d), Eq (Val d), Eq (Cond d)) => Domain d where
     andConditional  :: Cond d -> Cond d -> Cond d
     trueConditional :: Cond d
 
+-- Define the initial state for a calculator.
 initialState :: Domain d => VarEnv (Val d) -> CalculatorState d
 initialState initialEnv = CalculatorState {
     env                   = initialEnv
