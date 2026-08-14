@@ -1,5 +1,7 @@
 module CalculatorDSL where
 
+import Grisette (SymFP64)
+
 -- Arithmetic expressions
 data Expression =
       Literal Double
@@ -29,3 +31,6 @@ data Statement =
 -- Program
 data Program = Program [Statement]
     deriving (Eq, Show)
+
+-- Double symbolic type
+type SymDouble = SymFP64
