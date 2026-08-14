@@ -7,4 +7,4 @@ data Expression =
     | Add Expression Expression
     | Multiplication Expression Expression
     | Divide Expression Expression
-    deriving (Show, Eq)
+    deriving (Eq, Show)
