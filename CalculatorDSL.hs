@@ -84,6 +84,8 @@ deriving instance (Show (HKD f Double), Show (HKD f Bool)) =>
     Show (CalculatorState f)
 deriving via (Default (CalculatorState Symbolic)) instance
     Mergeable (CalculatorState Symbolic)
+deriving via (Default (CalculatorState Symbolic)) instance
+    EvalSym (CalculatorState Symbolic)
 
 -- Symbolic and Runtime states
 type RuntimeState = CalculatorState Concrete
