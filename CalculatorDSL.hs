@@ -4,6 +4,18 @@ import GHC.Generics (Generic)
 import Grisette (SymBool, SymFP64)
 import qualified Data.Map.Strict as Map
 
+-- Double symbolic type
+type SymDouble = SymFP64
+
+-- Data tags for supporting concrete and symbolic interpretation
+data Concrete
+data Symbolic
+
+type family HKD f a where
+    HKD Concrete a = a
+    HKD Symbolic Double = SymDouble
+    HKD Symbolic Bool = SymBool
+
 -- Arithmetic expressions
 data Expression =
       Literal Double
@@ -33,18 +45,6 @@ data Statement =
 -- Program
 data Program = Program [Statement]
     deriving (Eq, Show)
-
--- Double symbolic type
-type SymDouble = SymFP64
-
--- Data tags for supporting concrete and symbolic interpretation
-data Concrete
-data Symbolic
-
-type family HKD f a where
-    HKD Concrete a = a
-    HKD Symbolic Double = SymDouble
-    HKD Symbolic Bool = SymBool
 
 -- Calculator runtime state
 data CalculatorState f = CalculatorState {
