@@ -10,7 +10,7 @@ extra-doc-files:    README.md
 common warnings
     ghc-options: -Wall
 
-executable hs-cscope-extract
+executable hs-model-check-demo
     import:           warnings
     main-is:          Main.hs
     build-depends:
