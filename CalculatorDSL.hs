@@ -13,50 +13,53 @@ type SymDouble = SymFP64
 data Concrete
 data Symbolic
 
-type family HKD f a where
-    HKD Concrete a = a
-    HKD Symbolic Double = SymDouble
-    HKD Symbolic Bool = SymBool
+type family Val d = r | r -> d where
+    Val Concrete = Double
+    Val Symbolic = SymFP64
+
+type family Cond d = r | r -> d where
+    Cond Concrete = Bool
+    Cond Symbolic = SymBool
 
 -- Arithmetic expressions
-data Expression f =
-      Literal (HKD f Double)
+data Expression d =
+      Literal (Val d)
     | Variable String
-    | Add (Expression f) (Expression f)
-    | Multiplication (Expression f) (Expression f)
-    | Divide (Expression f) (Expression f)
+    | Add (Expression d) (Expression d)
+    | Multiplication (Expression d) (Expression d)
+    | Divide (Expression d) (Expression d)
 
-deriving instance (Eq (HKD f Double)) => Eq (Expression f)
-deriving instance (Show (HKD f Double)) => Show (Expression f)
+deriving instance (Eq (Val d)) => Eq (Expression d)
+deriving instance (Show (Val d)) => Show (Expression d)
 
 -- Relational expressions
-data RelationalExpression f =
-      Equal (Expression f) (Expression f)
-    | NotEqual (Expression f) (Expression f)
-    | LessThan (Expression f) (Expression f)
-    | LessThanEqual (Expression f) (Expression f)
-    | GreaterThan (Expression f) (Expression f)
-    | GreaterThanEqual (Expression f) (Expression f)
+data RelationalExpression d =
+      Equal (Expression d) (Expression d)
+    | NotEqual (Expression d) (Expression d)
+    | LessThan (Expression d) (Expression d)
+    | LessThanEqual (Expression d) (Expression d)
+    | GreaterThan (Expression d) (Expression d)
+    | GreaterThanEqual (Expression d) (Expression d)
 
-deriving instance (Eq (Expression f)) => Eq (RelationalExpression f)
-deriving instance (Show (Expression f)) => Show (RelationalExpression f)
+deriving instance (Eq (Expression d)) => Eq (RelationalExpression d)
+deriving instance (Show (Expression d)) => Show (RelationalExpression d)
 
 -- Statements
-data Statement f =
-      Set String (Expression f)
+data Statement d =
+      Set String (Expression d)
     | Unset String
-    | Assert (RelationalExpression f)
+    | Assert (RelationalExpression d)
 
-deriving instance (Eq (Expression f), Eq (RelationalExpression f)) =>
-    Eq (Statement f)
-deriving instance (Show (Expression f), Show (RelationalExpression f)) =>
-    Show (Statement f)
+deriving instance (Eq (Expression d), Eq (RelationalExpression d)) =>
+    Eq (Statement d)
+deriving instance (Show (Expression d), Show (RelationalExpression d)) =>
+    Show (Statement d)
 
 -- Program
-data Program f = Program [Statement f]
+data Program d = Program [Statement d]
 
-deriving instance (Eq (Statement f)) => Eq (Program f)
-deriving instance (Show (Statement f)) => Show (Program f)
+deriving instance (Eq (Statement d)) => Eq (Program d)
+deriving instance (Show (Statement d)) => Show (Program d)
 
 -- Variable environment
 newtype VarEnv v = VarEnv { unVarEnv :: Map.Map String v }
@@ -72,16 +75,16 @@ instance EvalSym v => EvalSym (VarEnv v) where
         VarEnv $ Map.fromList (evalSym model subst (Map.toList m))
 
 -- Calculator runtime state
-data CalculatorState f = CalculatorState {
-      env :: VarEnv (HKD f Double)
-    , assertions :: HKD f Bool
-    , safeDivideConditional :: HKD f Bool
+data CalculatorState d = CalculatorState {
+      env :: VarEnv (Val d)
+    , assertions :: Cond d
+    , safeDivideConditional :: Cond d
     } deriving stock (Generic)
 
-deriving instance (Eq (HKD f Double), Eq (HKD f Bool)) =>
-    Eq (CalculatorState f)
-deriving instance (Show (HKD f Double), Show (HKD f Bool)) =>
-    Show (CalculatorState f)
+deriving instance (Eq (Val d), Eq (Cond d)) =>
+    Eq (CalculatorState d)
+deriving instance (Show (Val d), Show (Cond d)) =>
+    Show (CalculatorState d)
 deriving via (Default (CalculatorState Symbolic)) instance
     Mergeable (CalculatorState Symbolic)
 deriving via (Default (CalculatorState Symbolic)) instance
