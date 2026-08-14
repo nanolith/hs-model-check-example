@@ -1,7 +1,8 @@
 module CalculatorDSL where
 
 import GHC.Generics (Generic)
-import Grisette (SymBool, SymFP64)
+import Grisette (
+    Default(..), Mergeable, SymBool, SymFP64, rootStrategy, wrapStrategy)
 import qualified Data.Map.Strict as Map
 
 -- Double symbolic type
@@ -56,18 +57,28 @@ data Program f = Program [Statement f]
 deriving instance (Eq (Statement f)) => Eq (Program f)
 deriving instance (Show (Statement f)) => Show (Program f)
 
+-- Variable environment
+newtype VarEnv v = VarEnv { unVarEnv :: Map.Map String v }
+  deriving newtype (Show, Eq)
+
+instance Mergeable v => Mergeable (VarEnv v) where
+    rootStrategy =
+        wrapStrategy rootStrategy (VarEnv . Map.fromList)
+                     (Map.toList .  unVarEnv)
+
 -- Calculator runtime state
 data CalculatorState f = CalculatorState {
-      env :: Map.Map String (HKD f Double)
+      env :: VarEnv (HKD f Double)
     , assertions :: HKD f Bool
     , safeDivideConditional :: HKD f Bool
-    } deriving (Generic)
+    } deriving stock (Generic)
 
 deriving instance (Eq (HKD f Double), Eq (HKD f Bool)) =>
     Eq (CalculatorState f)
 deriving instance (Show (HKD f Double), Show (HKD f Bool)) =>
     Show (CalculatorState f)
-deriving instance Generic (CalculatorState Symbolic)
+deriving via (Default (CalculatorState Symbolic)) instance
+    Mergeable (CalculatorState Symbolic)
 
 -- Symbolic and Runtime states
 type RuntimeState = CalculatorState Concrete
