@@ -103,3 +103,10 @@ class (Show (Val d), Show (Cond d), Eq (Val d), Eq (Cond d)) => Domain d where
     negativeZero    :: Val d -> Cond d
     andConditional  :: Cond d -> Cond d -> Cond d
     trueConditional :: Cond d
+
+initialState :: Domain d => VarEnv (Val d) -> CalculatorState d
+initialState initialEnv = CalculatorState {
+    env                   = initialEnv
+  , assertions            = trueConditional
+  , safeDivideConditional = trueConditional
+  }
