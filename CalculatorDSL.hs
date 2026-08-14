@@ -18,3 +18,10 @@ data RelationalExpression =
     | GreaterThan Expression Expression
     | GreaterThanEqual Expression Expression
     deriving (Eq, Show)
+
+-- Statements
+data Statement =
+      Set String Expression
+    | Unset String
+    | Assert RelationalExpression
+    deriving (Eq, Show)
