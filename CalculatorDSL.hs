@@ -25,3 +25,7 @@ data Statement =
     | Unset String
     | Assert RelationalExpression
     deriving (Eq, Show)
+
+-- Program
+data Program = Program [Statement]
+    deriving (Eq, Show)
