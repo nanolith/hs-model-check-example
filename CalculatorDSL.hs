@@ -93,3 +93,13 @@ deriving via (Default (CalculatorState Symbolic)) instance
 -- Symbolic and Runtime states
 type RuntimeState = CalculatorState Concrete
 type SymbolicState = CalculatorState Symbolic
+
+class (Show (Val d), Show (Cond d), Eq (Val d), Eq (Cond d)) => Domain d where
+    literalValue    :: Double -> Val d
+    addValue        :: Val d -> Val d -> Val d
+    multiplyValue   :: Val d -> Val d -> Val d
+    divideValue     :: Val d -> Val d -> Val d
+    equalValue      :: Val d -> Val d -> Cond d
+    negativeZero    :: Val d -> Cond d
+    andConditional  :: Cond d -> Cond d -> Cond d
+    trueConditional :: Cond d
