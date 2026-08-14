@@ -57,3 +57,7 @@ deriving instance (Eq (HKD f Double), Eq (HKD f Bool)) =>
     Eq (CalculatorState f)
 deriving instance (Show (HKD f Double), Show (HKD f Bool)) =>
     Show (CalculatorState f)
+
+-- Symbolic and Runtime states
+type RuntimeState = CalculatorState Concrete
+type SymbolicState = CalculatorState Symbolic
