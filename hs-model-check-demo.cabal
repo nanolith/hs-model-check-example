@@ -26,6 +26,7 @@ executable hs-model-check-demo
           DeriveGeneric
         , DeriveAnyClass
         , FlexibleContexts
+        , FlexibleInstances
         , OverloadedStrings
         , StandaloneDeriving
         , TypeFamilies
