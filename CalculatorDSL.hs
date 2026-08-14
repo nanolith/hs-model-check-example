@@ -1,6 +1,8 @@
 module CalculatorDSL where
 
+import GHC.Generics (Generic)
 import Grisette (SymBool, SymFP64)
+import qualified Data.Map.Strict as Map
 
 -- Arithmetic expressions
 data Expression =
@@ -43,3 +45,10 @@ type family HKD f a where
     HKD Concrete a = a
     HKD Symbolic Double = SymDouble
     HKD Symbolic Bool = SymBool
+
+-- Calculator runtime state
+data CalculatorState f = CalculatorState {
+      env :: Map.Map String (HKD f Double)
+    , assertions :: HKD f Bool
+    , safeDivideConditional :: HKD f Bool
+    } deriving (Generic)
