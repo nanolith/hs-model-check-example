@@ -2,7 +2,8 @@ module CalculatorDSL where
 
 import GHC.Generics (Generic)
 import Grisette (
-    Default(..), Mergeable, SymBool, SymFP64, rootStrategy, wrapStrategy)
+    Default(..), EvalSym(..), Mergeable, SymBool, SymFP64, rootStrategy,
+    wrapStrategy)
 import qualified Data.Map.Strict as Map
 
 -- Double symbolic type
@@ -65,6 +66,10 @@ instance Mergeable v => Mergeable (VarEnv v) where
     rootStrategy =
         wrapStrategy rootStrategy (VarEnv . Map.fromList)
                      (Map.toList .  unVarEnv)
+
+instance EvalSym v => EvalSym (VarEnv v) where
+    evalSym model subst (VarEnv m) =
+        VarEnv $ Map.fromList (evalSym model subst (Map.toList m))
 
 -- Calculator runtime state
 data CalculatorState f = CalculatorState {
