@@ -53,5 +53,7 @@ data CalculatorState f = CalculatorState {
     , safeDivideConditional :: HKD f Bool
     } deriving (Generic)
 
+deriving instance (Eq (HKD f Double), Eq (HKD f Bool)) =>
+    Eq (CalculatorState f)
 deriving instance (Show (HKD f Double), Show (HKD f Bool)) =>
     Show (CalculatorState f)
