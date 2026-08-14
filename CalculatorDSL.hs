@@ -1,5 +1,6 @@
 module CalculatorDSL where
 
+-- Arithmetic expressions
 data Expression =
       Literal Double
     | Variable String
