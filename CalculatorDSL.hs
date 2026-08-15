@@ -97,15 +97,20 @@ type SymbolicState = CalculatorState Symbolic
 
 -- Computational domain
 class (Show (Val d), Show (Cond d), Eq (Val d), Eq (Cond d)) => Domain d where
-    literalValue    :: Double -> Val d
-    addValue        :: Val d -> Val d -> Val d
-    subtractValue   :: Val d -> Val d -> Val d
-    multiplyValue   :: Val d -> Val d -> Val d
-    divideValue     :: Val d -> Val d -> Val d
-    equalValue      :: Val d -> Val d -> Cond d
-    notEqualZero    :: Val d -> Cond d
-    andConditional  :: Cond d -> Cond d -> Cond d
-    trueConditional :: Cond d
+    literalValue            :: Double -> Val d
+    addValue                :: Val d -> Val d -> Val d
+    subtractValue           :: Val d -> Val d -> Val d
+    multiplyValue           :: Val d -> Val d -> Val d
+    divideValue             :: Val d -> Val d -> Val d
+    equalValue              :: Val d -> Val d -> Cond d
+    notEqualValue           :: Val d -> Val d -> Cond d
+    lessThanValue           :: Val d -> Val d -> Cond d
+    lessThanEqualValue      :: Val d -> Val d -> Cond d
+    greaterThanValue        :: Val d -> Val d -> Cond d
+    greaterThanEqualValue   :: Val d -> Val d -> Cond d
+    notEqualZero            :: Val d -> Cond d
+    andConditional          :: Cond d -> Cond d -> Cond d
+    trueConditional         :: Cond d
 
 -- Define the initial state for a calculator.
 initialState :: Domain d => VarEnv (Val d) -> CalculatorState d
