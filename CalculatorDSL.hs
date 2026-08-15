@@ -1,5 +1,6 @@
 module CalculatorDSL where
 
+import Control.Monad (foldM)
 import GHC.Generics (Generic)
 import Grisette (
     (.==), (./=), (.<), (.<=), (.>), (.>=), (.&&), Default(..), EvalSym(..),
@@ -297,13 +298,25 @@ evalStatement stmt st =
             Right $ st' { assertions =
                                 andConditional (assertions st') assertion }
 
+-- evaluate a statement with a trace
+evalStatementWithTrace ::  Domain d => Statement d -> CalculatorState d
+        -> Either String (CalculatorState d)
+evalStatementWithTrace stmt st = do
+    st' <- evalStatement stmt st
+    let nextIndex = length (traceHistory st') + 1
+    let frame = Frame {
+              stepNumber     = nextIndex
+            , executedStmt   = stmt
+            , envSnapshot    = env st'
+            , assertionsHold = assertions st'
+            , safeDivHolds   = safeDivideConditional st' }
+    Right $ st' { traceHistory = traceHistory st' ++ [frame] }
+
 -- Run a calculator program
 evalProgram :: Domain d => Program d -> CalculatorState d
         -> Either String (CalculatorState d)
-evalProgram (Program []) st = Right st
-evalProgram (Program (s:ss)) st = do
-    st' <- evalStatement s st
-    evalProgram (Program ss) st'
+evalProgram (Program stmts) st = do
+    foldM (flip evalStatementWithTrace) st stmts
 
 -- Run the native program
 runNative :: Program Concrete -> VarEnv (Val Concrete)
