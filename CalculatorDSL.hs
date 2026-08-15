@@ -88,6 +88,8 @@ data Frame d = Frame {
   , safeDivHolds   :: Cond d
   } deriving stock (Generic)
 
+deriving stock instance (Eq (Val d), Eq (Cond d), Eq (Statement d)) =>
+    Eq (Frame d)
 deriving stock instance (Show (Val d), Show (Cond d), Show (Statement d)) =>
     Show (Frame d)
 
