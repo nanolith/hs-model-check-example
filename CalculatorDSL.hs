@@ -60,6 +60,8 @@ deriving instance (Eq (Expression d), Eq (RelationalExpression d)) =>
 deriving instance (Show (Expression d), Show (RelationalExpression d)) =>
     Show (Statement d)
 deriving stock instance Generic (Expression d)
+deriving via (Default (Expression Symbolic)) instance
+    Mergeable (Expression Symbolic)
 
 -- Program
 data Program d = Program [Statement d]
