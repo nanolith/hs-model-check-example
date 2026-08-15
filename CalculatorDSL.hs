@@ -353,4 +353,7 @@ verifyProgram prog initialEnv = do
             solverResult <- solve z3 violation
             case solverResult of
                 Left _      -> pure $ Right Nothing -- UNSAT: success
-                Right model -> pure $ Right $ Just model -- SAT: Counterexample
+                Right model -> do
+                    putStrLn "\nCounter-Example Found:\n"
+                    printTrace (traceHistory finalState) model
+                    pure $ Right $ Just model -- SAT: Counterexample
