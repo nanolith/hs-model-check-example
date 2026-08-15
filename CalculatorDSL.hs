@@ -3,8 +3,8 @@ module CalculatorDSL where
 import GHC.Generics (Generic)
 import Grisette (
     (.==), (./=), (.<), (.<=), (.>), (.>=), (.&&), Default(..), EvalSym(..),
-    Mergeable, FPRoundingMode(RNE), SymBool, SymFP64, fpAdd, fpDiv, fpMul, fpSub,
-    rootStrategy, toSym, wrapStrategy)
+    Mergeable, Model, FPRoundingMode(RNE), SymBool, SymFP64, fpAdd, fpDiv,
+    fpMul, fpSub, rootStrategy, solve, symNot, toSym, wrapStrategy, z3)
 import qualified Data.Map.Strict as Map
 
 -- Double symbolic type
@@ -259,3 +259,20 @@ evalProgram (Program (s:ss)) st = do
 runNative :: Program Concrete -> VarEnv (Val Concrete)
         -> Either String (CalculatorState Concrete)
 runNative prog initialEnv = evalProgram prog (initialState initialEnv)
+
+-- Verify a program
+verifyProgram :: Program Symbolic -> VarEnv (Val Symbolic)
+        -> IO (Either String (Maybe Model))
+verifyProgram prog initialEnv = do
+    case evalProgram prog (initialState initialEnv) of
+        Left err -> pure $ Left err
+        Right finalState -> do
+            -- Contract holds if assertions hold AND all divisions were non-zero
+            let totalContract =
+                    assertions finalState .&& safeDivideConditional finalState
+            let violation = symNot totalContract
+
+            solverResult <- solve z3 violation
+            case solverResult of
+                Left _      -> pure $ Right Nothing -- UNSAT: success
+                Right model -> pure $ Right $ Just model -- SAT: Counterexample
