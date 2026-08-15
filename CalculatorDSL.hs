@@ -1,6 +1,6 @@
 module CalculatorDSL where
 
-import Control.Monad (foldM)
+import Control.Monad (foldM, forM_)
 import GHC.Generics (Generic)
 import Grisette (
     (.==), (./=), (.<), (.<=), (.>), (.>=), (.&&), Default(..), EvalSym(..),
@@ -311,6 +311,20 @@ evalStatementWithTrace stmt st = do
             , assertionsHold = assertions st'
             , safeDivHolds   = safeDivideConditional st' }
     Right $ st' { traceHistory = traceHistory st' ++ [frame] }
+
+-- print a frame trace
+printTrace :: [Frame Symbolic] -> Model -> IO ()
+printTrace frames model = do
+    let concreteFrames = evalSym True model frames
+    putStrLn "\n  Execution Trace (Counterexample Replay):"
+    putStrLn "  --------------------------------------------------"
+    forM_ concreteFrames $ \frame -> do
+        putStrLn $ "  [Frame " ++ show (stepNumber frame) ++ "]"
+        putStrLn $ "    Statement  : " ++ show (executedStmt frame)
+        putStrLn $ "    Store      : " ++ show (envSnapshot frame)
+        putStrLn $ "    Assertions : " ++ show (assertionsHold frame)
+        putStrLn $ "    SafeDiv    : " ++ show (safeDivHolds frame)
+    putStrLn "  --------------------------------------------------"
 
 -- Run a calculator program
 evalProgram :: Domain d => Program d -> CalculatorState d
