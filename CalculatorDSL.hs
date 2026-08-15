@@ -79,6 +79,7 @@ instance EvalSym v => EvalSym (VarEnv v) where
 -- Calculator runtime state
 data CalculatorState d = CalculatorState {
       env :: VarEnv (Val d)
+    , assumptions :: Cond d
     , assertions :: Cond d
     , safeDivideConditional :: Cond d
     } deriving stock (Generic)
@@ -151,6 +152,7 @@ instance Domain Symbolic where
 initialState :: Domain d => VarEnv (Val d) -> CalculatorState d
 initialState initialEnv = CalculatorState {
     env                   = initialEnv
+  , assumptions           = trueConditional
   , assertions            = trueConditional
   , safeDivideConditional = trueConditional
   }
