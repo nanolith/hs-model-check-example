@@ -4,7 +4,8 @@ import GHC.Generics (Generic)
 import Grisette (
     (.==), (./=), (.<), (.<=), (.>), (.>=), (.&&), Default(..), EvalSym(..),
     Mergeable, Model, FPRoundingMode(RNE), SymBool, SymFP64, fpAdd, fpDiv,
-    fpMul, fpSub, rootStrategy, solve, symNot, toSym, wrapStrategy, z3)
+    fpMul, fpSub, rootStrategy, solve, symFpIsNaN, symNot, toSym, wrapStrategy,
+    z3)
 import qualified Data.Map.Strict as Map
 
 -- Double symbolic type
@@ -110,6 +111,7 @@ class (Show (Val d), Show (Cond d), Eq (Val d), Eq (Cond d)) => Domain d where
     lessThanEqualValue      :: Val d -> Val d -> Cond d
     greaterThanValue        :: Val d -> Val d -> Cond d
     greaterThanEqualValue   :: Val d -> Val d -> Cond d
+    isNotNaN                :: Val d -> Cond d
     notEqualZero            :: Val d -> Cond d
     andConditional          :: Cond d -> Cond d -> Cond d
     trueConditional         :: Cond d
@@ -127,6 +129,7 @@ instance Domain Concrete where
     lessThanEqualValue      = (<=)
     greaterThanValue        = (>)
     greaterThanEqualValue   = (>=)
+    isNotNaN v              = not (isNaN v)
     notEqualZero            = (/= 0)
     andConditional          = (&&)
     trueConditional         = True
@@ -144,6 +147,7 @@ instance Domain Symbolic where
     lessThanEqualValue      = (.<=)
     greaterThanValue        = (.>)
     greaterThanEqualValue   = (.>=)
+    isNotNaN v              = symNot (symFpIsNaN v)
     notEqualZero v          = v ./= toSym (0.0 :: Double)
     andConditional          = (.&&)
     trueConditional         = toSym True
