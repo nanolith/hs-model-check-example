@@ -55,6 +55,8 @@ deriving instance (Show (Expression d)) => Show (RelationalExpression d)
 deriving stock instance Generic (RelationalExpression d)
 deriving via (Default (RelationalExpression Symbolic)) instance
     Mergeable (RelationalExpression Symbolic)
+deriving via (Default (RelationalExpression Symbolic)) instance
+    EvalSym (RelationalExpression Symbolic)
 
 -- Statements
 data Statement d =
