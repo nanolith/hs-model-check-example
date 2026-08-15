@@ -88,6 +88,9 @@ data Frame d = Frame {
   , safeDivHolds   :: Cond d
   } deriving stock (Generic)
 
+deriving stock instance (Show (Val d), Show (Cond d), Show (Statement d)) =>
+    Show (Frame d)
+
 -- Calculator runtime state
 data CalculatorState d = CalculatorState {
       env :: VarEnv (Val d)
