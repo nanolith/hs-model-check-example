@@ -72,6 +72,8 @@ deriving instance (Show (Expression d), Show (RelationalExpression d)) =>
 deriving stock instance Generic (Statement d)
 deriving via (Default (Statement Symbolic)) instance
     Mergeable (Statement Symbolic)
+deriving via (Default (Statement Symbolic)) instance
+    EvalSym (Statement Symbolic)
 
 -- Program
 data Program d = Program [Statement d]
