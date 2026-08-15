@@ -53,6 +53,8 @@ data RelationalExpression d =
 deriving instance (Eq (Expression d)) => Eq (RelationalExpression d)
 deriving instance (Show (Expression d)) => Show (RelationalExpression d)
 deriving stock instance Generic (RelationalExpression d)
+deriving via (Default (RelationalExpression Symbolic)) instance
+    Mergeable (RelationalExpression Symbolic)
 
 -- Statements
 data Statement d =
