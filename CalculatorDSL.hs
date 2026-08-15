@@ -153,3 +153,37 @@ evalExpression expr st = case expr of
         safeDivideConditional =
             andConditional (safeDivideConditional st2) (notEqualZero v2) }
     Right (divideValue v1 v2, st3)
+
+evalRelationalExpression :: Domain d => RelationalExpression d
+        -> CalculatorState d -> Either String (Cond d, CalculatorState d)
+evalRelationalExpression stmt st =
+    case stmt of
+        Equal ex1 ex2 -> do
+            (lhs, st1) <- evalExpression ex1 st
+            (rhs, st2) <- evalExpression ex2 st1
+            Right $ (equalValue lhs rhs, st2)
+
+        NotEqual ex1 ex2 -> do
+            (lhs, st1) <- evalExpression ex1 st
+            (rhs, st2) <- evalExpression ex2 st1
+            Right $ (notEqualValue lhs rhs, st2)
+
+        LessThan ex1 ex2 -> do
+            (lhs, st1) <- evalExpression ex1 st
+            (rhs, st2) <- evalExpression ex2 st1
+            Right $ (lessThanValue lhs rhs, st2)
+
+        LessThanEqual ex1 ex2 -> do
+            (lhs, st1) <- evalExpression ex1 st
+            (rhs, st2) <- evalExpression ex2 st1
+            Right $ (lessThanEqualValue lhs rhs, st2)
+
+        GreaterThan ex1 ex2 -> do
+            (lhs, st1) <- evalExpression ex1 st
+            (rhs, st2) <- evalExpression ex2 st1
+            Right $ (greaterThanValue lhs rhs, st2)
+
+        GreaterThanEqual ex1 ex2 -> do
+            (lhs, st1) <- evalExpression ex1 st
+            (rhs, st2) <- evalExpression ex2 st1
+            Right $ (greaterThanEqualValue lhs rhs, st2)
