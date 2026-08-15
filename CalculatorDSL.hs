@@ -39,6 +39,7 @@ deriving instance (Show (Val d)) => Show (Expression d)
 data RelationalExpression d =
       Equal (Expression d) (Expression d)
     | NotEqual (Expression d) (Expression d)
+    | NotNaN (Expression d)
     | LessThan (Expression d) (Expression d)
     | LessThanEqual (Expression d) (Expression d)
     | GreaterThan (Expression d) (Expression d)
@@ -209,6 +210,10 @@ evalRelationalExpression stmt st =
             (lhs, st1) <- evalExpression ex1 st
             (rhs, st2) <- evalExpression ex2 st1
             Right $ (notEqualValue lhs rhs, st2)
+
+        NotNaN ex -> do
+            (lhs, st') <- evalExpression ex st
+            Right $ (isNotNaN lhs, st')
 
         LessThan ex1 ex2 -> do
             (lhs, st1) <- evalExpression ex1 st
