@@ -187,3 +187,27 @@ evalRelationalExpression stmt st =
             (lhs, st1) <- evalExpression ex1 st
             (rhs, st2) <- evalExpression ex2 st1
             Right $ (greaterThanEqualValue lhs rhs, st2)
+
+-- Evaluate a statement
+evalStatement :: Domain d => Statement d -> CalculatorState d
+        -> Either String (CalculatorState d)
+evalStatement stmt st =
+    case stmt of
+        Set name expr -> do
+            (val, st') <- evalExpression expr st
+            Right $ st' { env =
+                            VarEnv $ Map.insert name val $ unVarEnv $ env st' }
+
+        Unset name ->
+            if Map.member name $ unVarEnv $ env st
+                then Right $ st { env =
+                                    VarEnv $ Map.delete name
+                                        $ unVarEnv $ env st }
+                else Left
+                        $ "Scope Error: Cannot delete nonexistent variable '"
+                                ++ name ++ "'."
+
+        Assert rel -> do
+            (assertion, st') <- evalRelationalExpression rel st
+            Right $ st' { assertions =
+                                andConditional (assertions st') assertion }
