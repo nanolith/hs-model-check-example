@@ -112,6 +112,23 @@ class (Show (Val d), Show (Cond d), Eq (Val d), Eq (Cond d)) => Domain d where
     andConditional          :: Cond d -> Cond d -> Cond d
     trueConditional         :: Cond d
 
+-- Concrete domain used for running programs.
+instance Domain Concrete where
+    literalValue            = id
+    addValue                = (+)
+    subtractValue           = (-)
+    multiplyValue           = (*)
+    divideValue             = (/)
+    equalValue              = (==)
+    notEqualValue           = (/=)
+    lessThanValue           = (<)
+    lessThanEqualValue      = (<=)
+    greaterThanValue        = (>)
+    greaterThanEqualValue   = (>=)
+    notEqualZero            = (/= 0)
+    andConditional          = (&&)
+    trueConditional         = True
+
 -- Define the initial state for a calculator.
 initialState :: Domain d => VarEnv (Val d) -> CalculatorState d
 initialState initialEnv = CalculatorState {
@@ -221,6 +238,6 @@ evalProgram (Program (s:ss)) st = do
     evalProgram (Program ss) st'
 
 -- Run the native program
-runNative :: Domain d => Program d -> VarEnv (Val d)
-        -> Either String (CalculatorState d)
+runNative :: Program Concrete -> VarEnv (Val Concrete)
+        -> Either String (CalculatorState Concrete)
 runNative prog initialEnv = evalProgram prog (initialState initialEnv)
