@@ -211,3 +211,11 @@ evalStatement stmt st =
             (assertion, st') <- evalRelationalExpression rel st
             Right $ st' { assertions =
                                 andConditional (assertions st') assertion }
+
+-- Run a calculator program
+evalProgram :: Domain d => Program d -> CalculatorState d
+        -> Either String (CalculatorState d)
+evalProgram (Program []) st = Right st
+evalProgram (Program (s:ss)) st = do
+    st' <- evalStatement s st
+    evalProgram (Program ss) st'
