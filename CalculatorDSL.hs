@@ -51,6 +51,7 @@ deriving instance (Show (Expression d)) => Show (RelationalExpression d)
 data Statement d =
       Set String (Expression d)
     | Unset String
+    | Assume (RelationalExpression d)
     | Assert (RelationalExpression d)
 
 deriving instance (Eq (Expression d), Eq (RelationalExpression d)) =>
@@ -247,6 +248,11 @@ evalStatement stmt st =
                 else Left
                         $ "Scope Error: Cannot delete nonexistent variable '"
                                 ++ name ++ "'."
+
+        Assume rel -> do
+            (assumption, st') <- evalRelationalExpression rel st
+            Right $ st' { assumptions =
+                                andConditional (assumptions st') assumption }
 
         Assert rel -> do
             (assertion, st') <- evalRelationalExpression rel st
