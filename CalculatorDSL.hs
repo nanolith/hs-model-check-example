@@ -34,6 +34,11 @@ data Expression d =
 
 deriving instance (Eq (Val d)) => Eq (Expression d)
 deriving instance (Show (Val d)) => Show (Expression d)
+deriving stock instance Generic (Expression d)
+deriving via (Default (Expression Symbolic)) instance
+    Mergeable (Expression Symbolic)
+deriving via (Default (Expression Symbolic)) instance
+    EvalSym (Expression Symbolic)
 
 -- Relational expressions
 data RelationalExpression d =
@@ -47,6 +52,7 @@ data RelationalExpression d =
 
 deriving instance (Eq (Expression d)) => Eq (RelationalExpression d)
 deriving instance (Show (Expression d)) => Show (RelationalExpression d)
+deriving stock instance Generic (RelationalExpression d)
 
 -- Statements
 data Statement d =
@@ -59,11 +65,6 @@ deriving instance (Eq (Expression d), Eq (RelationalExpression d)) =>
     Eq (Statement d)
 deriving instance (Show (Expression d), Show (RelationalExpression d)) =>
     Show (Statement d)
-deriving stock instance Generic (Expression d)
-deriving via (Default (Expression Symbolic)) instance
-    Mergeable (Expression Symbolic)
-deriving via (Default (Expression Symbolic)) instance
-    EvalSym (Expression Symbolic)
 
 -- Program
 data Program d = Program [Statement d]
