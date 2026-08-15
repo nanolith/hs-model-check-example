@@ -28,7 +28,7 @@ data Expression d =
     | Variable String
     | Add (Expression d) (Expression d)
     | Subtract (Expression d) (Expression d)
-    | Multiplication (Expression d) (Expression d)
+    | Multiply (Expression d) (Expression d)
     | Divide (Expression d) (Expression d)
 
 deriving instance (Eq (Val d)) => Eq (Expression d)
@@ -176,7 +176,7 @@ evalExpression expr st = case expr of
     (v2, st2) <- evalExpression e2 st1
     Right (subtractValue v1 v2, st2)
 
-  Multiplication e1 e2 -> do
+  Multiply e1 e2 -> do
     (v1, st1) <- evalExpression e1 st
     (v2, st2) <- evalExpression e2 st1
     Right (multiplyValue v1 v2, st2)
