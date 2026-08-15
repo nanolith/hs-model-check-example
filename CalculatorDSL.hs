@@ -79,6 +79,15 @@ instance EvalSym v => EvalSym (VarEnv v) where
     evalSym model subst (VarEnv m) =
         VarEnv $ Map.fromList (evalSym model subst (Map.toList m))
 
+-- Execution frame for model checking
+data Frame d = Frame {
+    stepNumber     :: Int
+  , executedStmt   :: Statement d
+  , envSnapshot    :: VarEnv (Val d)
+  , assertionsHold :: Cond d
+  , safeDivHolds   :: Cond d
+  } deriving stock (Generic)
+
 -- Calculator runtime state
 data CalculatorState d = CalculatorState {
       env :: VarEnv (Val d)
