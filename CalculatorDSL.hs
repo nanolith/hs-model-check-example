@@ -285,9 +285,10 @@ verifyProgram prog initialEnv = do
         Left err -> pure $ Left err
         Right finalState -> do
             -- Contract holds if assertions hold AND all divisions were non-zero
-            let totalContract =
+            let preconditions = assumptions finalState
+            let postconditions =
                     assertions finalState .&& safeDivideConditional finalState
-            let violation = symNot totalContract
+            let violation = preconditions .&& symNot postconditions
 
             solverResult <- solve z3 violation
             case solverResult of
