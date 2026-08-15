@@ -2,8 +2,9 @@ module CalculatorDSL where
 
 import GHC.Generics (Generic)
 import Grisette (
-    Default(..), EvalSym(..), Mergeable, SymBool, SymFP64, rootStrategy,
-    wrapStrategy)
+    (.==), (./=), (.<), (.<=), (.>), (.>=), (.&&), Default(..), EvalSym(..),
+    Mergeable, FPRoundingMode(RNE), SymBool, SymFP64, fpAdd, fpDiv, fpMul, fpSub,
+    rootStrategy, toSym, wrapStrategy)
 import qualified Data.Map.Strict as Map
 
 -- Double symbolic type
@@ -128,6 +129,23 @@ instance Domain Concrete where
     notEqualZero            = (/= 0)
     andConditional          = (&&)
     trueConditional         = True
+
+-- Symbolic domain used for model checking program
+instance Domain Symbolic where
+    literalValue            = toSym
+    addValue                = fpAdd $ toSym RNE
+    subtractValue           = fpSub $ toSym RNE
+    multiplyValue           = fpMul $ toSym RNE
+    divideValue             = fpDiv $ toSym RNE
+    equalValue              = (.==)
+    notEqualValue           = (./=)
+    lessThanValue           = (.<)
+    lessThanEqualValue      = (.<=)
+    greaterThanValue        = (.>)
+    greaterThanEqualValue   = (.>=)
+    notEqualZero v          = v ./= toSym (0.0 :: Double)
+    andConditional          = (.&&)
+    trueConditional         = toSym True
 
 -- Define the initial state for a calculator.
 initialState :: Domain d => VarEnv (Val d) -> CalculatorState d
