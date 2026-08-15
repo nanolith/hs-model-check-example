@@ -116,6 +116,7 @@ data CalculatorState d = CalculatorState {
     , assumptions :: Cond d
     , assertions :: Cond d
     , safeDivideConditional :: Cond d
+    , traceHistory :: [Frame d]
     } deriving stock (Generic)
 
 deriving instance (Eq (Val d), Eq (Cond d)) =>
@@ -188,10 +189,11 @@ instance Domain Symbolic where
 -- Define the initial state for a calculator.
 initialState :: Domain d => VarEnv (Val d) -> CalculatorState d
 initialState initialEnv = CalculatorState {
-    env                   = initialEnv
-  , assumptions           = trueConditional
-  , assertions            = trueConditional
-  , safeDivideConditional = trueConditional
+      env                   = initialEnv
+    , assumptions           = trueConditional
+    , assertions            = trueConditional
+    , safeDivideConditional = trueConditional
+    , traceHistory          = []
   }
 
 -- Evaluate an expression
