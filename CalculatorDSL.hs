@@ -219,3 +219,8 @@ evalProgram (Program []) st = Right st
 evalProgram (Program (s:ss)) st = do
     st' <- evalStatement s st
     evalProgram (Program ss) st'
+
+-- Run the native program
+runNative :: Domain d => Program d -> VarEnv (Val d)
+        -> Either String (CalculatorState d)
+runNative prog initialEnv = evalProgram prog (initialState initialEnv)
