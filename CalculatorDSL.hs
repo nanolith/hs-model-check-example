@@ -107,6 +107,7 @@ deriving stock instance (Eq (Val d), Eq (Cond d), Eq (Statement d)) =>
     Eq (Frame d)
 deriving stock instance (Show (Val d), Show (Cond d), Show (Statement d)) =>
     Show (Frame d)
+deriving via (Default (Frame Symbolic)) instance Mergeable (Frame Symbolic)
 
 -- Calculator runtime state
 data CalculatorState d = CalculatorState {
