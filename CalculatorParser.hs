@@ -69,3 +69,7 @@ term =
         parentheses expression
     <|> (Literal <$> number)
     <|> (Variable <$> identifier)
+
+-- parse a "not NaN" expression
+parseNotNaN :: Parser (RelationalExpression Concrete)
+parseNotNaN = NotNaN <$> (symbol "notNaN" *> (parentheses expression <|> term))
