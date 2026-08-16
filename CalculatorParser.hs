@@ -1,7 +1,7 @@
 module CalculatorParser where
 
 import CalculatorDSL
-import Control.Monad.Combinators.Expr (Operator (..))
+import Control.Monad.Combinators.Expr (Operator (..), makeExprParser)
 import Data.Text (Text)
 import Data.Void (Void)
 import Text.Megaparsec
@@ -58,3 +58,14 @@ operatorTable =
             , InfixL (Divide   <$ symbol "/") ]
     , [       InfixL (Add      <$ symbol "+")
             , InfixL (Subtract <$ symbol "-") ] ]
+
+-- expression parser
+expression :: Parser (Expression Concrete)
+expression = makeExprParser term operatorTable
+
+-- term parser
+term :: Parser (Expression Concrete)
+term =
+        parentheses expression
+    <|> (Literal <$> number)
+    <|> (Variable <$> identifier)
