@@ -73,3 +73,16 @@ term =
 -- parse a "not NaN" expression
 parseNotNaN :: Parser (RelationalExpression Concrete)
 parseNotNaN = NotNaN <$> (symbol "notNaN" *> (parentheses expression <|> term))
+
+-- Parse a relational operation
+parseRelationalOperation ::
+        Parser (Expression Concrete -> Expression Concrete
+                    -> RelationalExpression Concrete)
+parseRelationalOperation =
+    choice [
+          Equal             <$ (symbol "==" <|> symbol "=")
+        , NotEqual          <$ (symbol "!=" <|> symbol "/=")
+        , LessThanEqual     <$ symbol "<="
+        , GreaterThanEqual  <$ symbol ">="
+        , LessThan          <$ symbol "<"
+        , GreaterThan       <$ symbol ">"]
