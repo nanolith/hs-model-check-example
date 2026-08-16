@@ -28,3 +28,7 @@ symbol = L.symbol spaceConsumer
 -- parentheses parser
 parentheses :: Parser a -> Parser a
 parentheses = between (symbol "(") (symbol ")")
+
+-- list of reserved keywords
+reservedKeywords :: [Text]
+reservedKeywords = ["set", "unset", "assume", "assert", "notNaN"]
