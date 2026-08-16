@@ -4,6 +4,7 @@ import Data.Text (Text)
 import Data.Void (Void)
 import Text.Megaparsec
 import Text.Megaparsec.Char
+import qualified Data.Text as T
 import qualified Text.Megaparsec.Char.Lexer as L
 
 -- the parser type
@@ -32,3 +33,13 @@ parentheses = between (symbol "(") (symbol ")")
 -- list of reserved keywords
 reservedKeywords :: [Text]
 reservedKeywords = ["set", "unset", "assume", "assert", "notNaN"]
+
+-- identifier parser that rejects reserved keywords
+identifier :: Parser String
+identifier = lexeme (p >>= checkReserved)
+  where
+    p = (:) <$> letterChar <*> many (alphaNumChar <|> char '_')
+    checkReserved x
+      | T.pack x `elem` reservedKeywords =
+            fail $ "attempt to use keyword " ++ show x ++ " as an identifier"
+      | otherwise                        = pure x
