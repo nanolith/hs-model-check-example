@@ -16,3 +16,7 @@ spaceConsumer =
         space1
         (L.skipLineComment "//")
         (L.skipBlockComment "/*" "*/")
+
+-- lexical element parser
+lexeme :: Parser a -> Parser a
+lexeme = L.lexeme spaceConsumer
