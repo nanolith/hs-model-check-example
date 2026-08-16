@@ -43,3 +43,8 @@ identifier = lexeme (p >>= checkReserved)
       | T.pack x `elem` reservedKeywords =
             fail $ "attempt to use keyword " ++ show x ++ " as an identifier"
       | otherwise                        = pure x
+
+-- parse a number
+number :: Parser Double
+number =
+    lexeme (try L.float <|> (fromIntegral <$> (L.decimal :: Parser Integer)))
