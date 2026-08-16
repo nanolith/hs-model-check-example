@@ -86,3 +86,8 @@ parseRelationalOperation =
         , GreaterThanEqual  <$ symbol ">="
         , LessThan          <$ symbol "<"
         , GreaterThan       <$ symbol ">"]
+
+-- Parse a relational expression
+parseRelationalExpression :: Parser (RelationalExpression Concrete)
+parseRelationalExpression =
+    parseNotNaN <|> (parseRelationalOperation <*> expression <*> expression)
