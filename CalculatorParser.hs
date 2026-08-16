@@ -1,5 +1,7 @@
 module CalculatorParser where
 
+import CalculatorDSL
+import Control.Monad.Combinators.Expr (Operator (..))
 import Data.Text (Text)
 import Data.Void (Void)
 import Text.Megaparsec
@@ -48,3 +50,11 @@ identifier = lexeme (p >>= checkReserved)
 number :: Parser Double
 number =
     lexeme (try L.float <|> (fromIntegral <$> (L.decimal :: Parser Integer)))
+
+-- table of operators, in order of precedence.
+operatorTable :: [[Operator Parser (Expression Concrete)]]
+operatorTable =
+      [ [     InfixL (Multiply <$ symbol "*")
+            , InfixL (Divide   <$ symbol "/") ]
+    , [       InfixL (Add      <$ symbol "+")
+            , InfixL (Subtract <$ symbol "-") ] ]
