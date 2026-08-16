@@ -20,3 +20,7 @@ spaceConsumer =
 -- lexical element parser
 lexeme :: Parser a -> Parser a
 lexeme = L.lexeme spaceConsumer
+
+-- symbol parser
+symbol :: Text -> Parser Text
+symbol = L.symbol spaceConsumer
