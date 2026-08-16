@@ -24,3 +24,7 @@ lexeme = L.lexeme spaceConsumer
 -- symbol parser
 symbol :: Text -> Parser Text
 symbol = L.symbol spaceConsumer
+
+-- parentheses parser
+parentheses :: Parser a -> Parser a
+parentheses = between (symbol "(") (symbol ")")
