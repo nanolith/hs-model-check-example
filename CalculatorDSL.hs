@@ -156,6 +156,7 @@ class (Show (Val d), Show (Cond d), Eq (Val d), Eq (Cond d)) => Domain d where
     subtractValue           :: Val d -> Val d -> Val d
     multiplyValue           :: Val d -> Val d -> Val d
     divideValue             :: Val d -> Val d -> Val d
+    negateValue             :: Val d -> Val d
     equalValue              :: Val d -> Val d -> Cond d
     notEqualValue           :: Val d -> Val d -> Cond d
     lessThanValue           :: Val d -> Val d -> Cond d
@@ -174,6 +175,7 @@ instance Domain Concrete where
     subtractValue           = (-)
     multiplyValue           = (*)
     divideValue             = (/)
+    negateValue             = negate
     equalValue              = (==)
     notEqualValue           = (/=)
     lessThanValue           = (<)
@@ -192,6 +194,7 @@ instance Domain Symbolic where
     subtractValue           = (-)
     multiplyValue           = (*)
     divideValue             = (/)
+    negateValue             = negate
     equalValue              = (.==)
     notEqualValue           = (./=)
     lessThanValue           = (.<)
