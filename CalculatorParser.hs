@@ -103,3 +103,7 @@ parseUnsetStatement = Unset <$> identifier
 -- Parse an assume statement
 parseAssume :: Parser (Statement Concrete)
 parseAssume = Assume <$> parseRelationalExpression
+
+-- Parse an assert statement
+parseAssert :: Parser (Statement Concrete)
+parseAssert = Assert <$> parseRelationalExpression
