@@ -127,6 +127,7 @@ deriving via (Default (Frame Symbolic)) instance EvalSym (Frame Symbolic)
 -- Calculator runtime state
 data CalculatorState d = CalculatorState {
       env :: VarEnv (Val d)
+    , mode :: EvaluationMode
     , assumptions :: Cond d
     , assertions :: Cond d
     , safeDivideConditional :: Cond d
@@ -204,6 +205,7 @@ instance Domain Symbolic where
 initialState :: Domain d => VarEnv (Val d) -> CalculatorState d
 initialState initialEnv = CalculatorState {
       env                   = initialEnv
+    , mode                  = CalculatorDSL.Default
     , assumptions           = trueConditional
     , assertions            = trueConditional
     , safeDivideConditional = trueConditional
