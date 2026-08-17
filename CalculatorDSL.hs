@@ -380,12 +380,23 @@ verifyProgram prog initialEnv = do
             let preconditions = assumptions finalState
             let postconditions =
                     assertions finalState .&& safeDivideConditional finalState
-            let violation = preconditions .&& symNot postconditions
+            let state =
+                    if mode finalState == SolveMode
+                        then preconditions .&& postconditions
+                        else preconditions .&& symNot postconditions
+            let solveState =
+                    if mode finalState == SolveMode
+                        then "Solution"
+                        else "Counter-Example"
+            let shouldSolve = (mode finalState == SolveMode)
 
-            solverResult <- solve z3 violation
+            solverResult <- solve z3 state
             case solverResult of
-                Left _      -> pure $ Right Nothing -- UNSAT: success
+                Left _      ->
+                    if shouldSolve
+                        then pure $ Left "No solution found."
+                        else pure $ Right Nothing -- UNSAT: success
                 Right model -> do
-                    putStrLn "\nCounter-Example Found:\n"
+                    putStrLn $ "\n" ++ solveState ++ " Found:\n"
                     printTrace (traceHistory finalState) model
-                    pure $ Right $ Just model -- SAT: Counterexample
+                    pure $ Right $ Just model -- SAT: solveState
