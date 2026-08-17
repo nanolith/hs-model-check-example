@@ -78,6 +78,7 @@ data Statement d =
     | Unset String
     | Assume (RelationalExpression d)
     | Assert (RelationalExpression d)
+    | Compute
 
 deriving instance (Eq (Expression d), Eq (RelationalExpression d)) =>
     Eq (Statement d)
@@ -312,6 +313,11 @@ evalStatement stmt st =
             (assertion, st') <- evalRelationalExpression rel st
             Right $ st' { assertions =
                                 andConditional (assertions st') assertion }
+
+        Compute -> do
+            if mode st /= DefaultMode
+                then Left $ "Mode " ++ (show $ mode st) ++ " already selected."
+                else Right $ st { mode = ComputeMode}
 
 -- evaluate a statement with a trace
 evalStatementWithTrace ::  Domain d => Statement d -> CalculatorState d
