@@ -26,10 +26,10 @@ type family Cond d = r | r -> d where
 
 -- Evaluation modes
 data EvaluationMode =
-      Default
-    | Compute
-    | Solve
-    | Verify
+      DefaultMode
+    | ComputeMode
+    | SolveMode
+    | VerifyMode
 
 deriving stock instance Eq EvaluationMode
 deriving stock instance Show EvaluationMode
@@ -205,7 +205,7 @@ instance Domain Symbolic where
 initialState :: Domain d => VarEnv (Val d) -> CalculatorState d
 initialState initialEnv = CalculatorState {
       env                   = initialEnv
-    , mode                  = CalculatorDSL.Default
+    , mode                  = DefaultMode
     , assumptions           = trueConditional
     , assertions            = trueConditional
     , safeDivideConditional = trueConditional
