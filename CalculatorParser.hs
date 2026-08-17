@@ -93,8 +93,8 @@ relationalExpression =
     notNaN <|> (relationalOperation <*> expression <*> expression)
 
 -- Parse a set statement
-parseSetStatement :: Parser (Statement Concrete)
-parseSetStatement = Set <$> identifier <* symbol "=" <*> expression
+setStatement :: Parser (Statement Concrete)
+setStatement = Set <$> identifier <* symbol "=" <*> expression
 
 -- Parse an unset statement
 parseUnsetStatement :: Parser (Statement Concrete)
@@ -111,7 +111,7 @@ parseAssert = Assert <$> relationalExpression
 parseStatement :: Parser (Statement Concrete)
 parseStatement =
     choice [
-          parseSetStatement
+          setStatement
         , parseUnsetStatement
         , parseAssume
         , parseAssert ]
