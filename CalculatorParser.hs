@@ -71,8 +71,8 @@ term =
     <|> (Variable <$> identifier)
 
 -- parse a "not NaN" expression
-parseNotNaN :: Parser (RelationalExpression Concrete)
-parseNotNaN = NotNaN <$> (symbol "notNaN" *> (parentheses expression <|> term))
+notNaN :: Parser (RelationalExpression Concrete)
+notNaN = NotNaN <$> (symbol "notNaN" *> (parentheses expression <|> term))
 
 -- Parse a relational operation
 parseRelationalOperation ::
@@ -90,7 +90,7 @@ parseRelationalOperation =
 -- Parse a relational expression
 parseRelationalExpression :: Parser (RelationalExpression Concrete)
 parseRelationalExpression =
-    parseNotNaN <|> (parseRelationalOperation <*> expression <*> expression)
+    notNaN <|> (parseRelationalOperation <*> expression <*> expression)
 
 -- Parse a set statement
 parseSetStatement :: Parser (Statement Concrete)
