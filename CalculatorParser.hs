@@ -102,7 +102,7 @@ unsetStatement = Unset <$> (symbol "unset" *> identifier)
 
 -- Parse an assume statement
 assumeStatement :: Parser (Statement Concrete)
-assumeStatement = Assume <$> relationalExpression
+assumeStatement = Assume <$> (symbol "assume" *> relationalExpression)
 
 -- Parse an assert statement
 assertStatement :: Parser (Statement Concrete)
