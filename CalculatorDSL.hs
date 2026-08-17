@@ -31,6 +31,8 @@ data EvaluationMode =
     | Solve
     | Verify
 
+deriving stock instance Generic EvaluationMode
+
 -- Arithmetic expressions
 data Expression d =
       Literal (Val d)
