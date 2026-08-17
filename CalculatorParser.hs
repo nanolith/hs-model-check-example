@@ -88,8 +88,8 @@ relationalOperation =
         , GreaterThan       <$ symbol ">"]
 
 -- Parse a relational expression
-parseRelationalExpression :: Parser (RelationalExpression Concrete)
-parseRelationalExpression =
+relationalExpression :: Parser (RelationalExpression Concrete)
+relationalExpression =
     notNaN <|> (relationalOperation <*> expression <*> expression)
 
 -- Parse a set statement
@@ -102,11 +102,11 @@ parseUnsetStatement = Unset <$> identifier
 
 -- Parse an assume statement
 parseAssume :: Parser (Statement Concrete)
-parseAssume = Assume <$> parseRelationalExpression
+parseAssume = Assume <$> relationalExpression
 
 -- Parse an assert statement
 parseAssert :: Parser (Statement Concrete)
-parseAssert = Assert <$> parseRelationalExpression
+parseAssert = Assert <$> relationalExpression
 
 parseStatement :: Parser (Statement Concrete)
 parseStatement =
