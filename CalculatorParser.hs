@@ -123,7 +123,13 @@ verifyStatement = pure Verify <* symbol "verify"
 -- Parse a statement
 statement :: Parser (Statement Concrete)
 statement =
-    choice [setStatement, unsetStatement, assumeStatement, assertStatement]
+    choice [
+          setStatement
+        , unsetStatement
+        , assumeStatement
+        , assertStatement
+        , computeStatement
+        ]
 
 -- Run the parser on the given parser function for a single statement.
 parseStatement :: Text
