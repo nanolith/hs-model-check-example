@@ -91,3 +91,7 @@ parseRelationalOperation =
 parseRelationalExpression :: Parser (RelationalExpression Concrete)
 parseRelationalExpression =
     parseNotNaN <|> (parseRelationalOperation <*> expression <*> expression)
+
+-- Parse a set statement
+parseSetStatement :: Parser (Statement Concrete)
+parseSetStatement = Set <$> identifier <* symbol "=" <*> expression
