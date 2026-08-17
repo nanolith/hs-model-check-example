@@ -105,8 +105,8 @@ assume :: Parser (Statement Concrete)
 assume = Assume <$> relationalExpression
 
 -- Parse an assert statement
-parseAssert :: Parser (Statement Concrete)
-parseAssert = Assert <$> relationalExpression
+assert :: Parser (Statement Concrete)
+assert = Assert <$> relationalExpression
 
 parseStatement :: Parser (Statement Concrete)
 parseStatement =
@@ -114,4 +114,4 @@ parseStatement =
           setStatement
         , unsetStatement
         , assume
-        , parseAssert ]
+        , assert ]
