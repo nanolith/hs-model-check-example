@@ -1,7 +1,6 @@
 module Main where
 
 import CalculatorDSL
-import Grisette (SymFP64)
 import qualified Data.Map.Strict as Map
 
 -- Program A: Valid algebraic equivalence (y = x + x, assert y == 2 * x)
@@ -29,6 +28,17 @@ progAssertFail = Program
                 Add (Variable "x") (Literal (literalValue 3.0))
   ]
 
+-- Program D: Solve for x and y in (y = 5 * x + 7; y = 4 * x + 3)
+progFindSolution :: Domain d => Program d
+progFindSolution = Program
+  [ Set "y1" (Add (Multiply (Literal (literalValue 5.0)) (Variable "x"))
+                  (Literal (literalValue 7.0)))
+  , Set "y2" (Add (Multiply (Literal (literalValue 4.0)) (Variable "x"))
+                  (Literal (literalValue 3.0)))
+  , Assert $ Equal (Variable "y1") (Variable "y2")
+  , Solve
+  ]
+
 --------------------------------------------------------------------------------
 -- Main Entry Point
 --------------------------------------------------------------------------------
@@ -47,7 +57,7 @@ main = do
     putStrLn " 2. FORMAL VERIFICATION: Algebraic Equivalence"
     putStrLn " Program: y = x + x; assert(y == 2 * x)"
     putStrLn "============================================================"
-    let symX = "x" :: SymFP64
+    let symX = "x" :: SymDouble
     result1 <- verifyProgram progValid $ VarEnv $ Map.fromList [("x", symX)]
     case result1 of
         Left err -> do putStrLn $ "Runtime error: " ++ err
@@ -79,3 +89,16 @@ main = do
             case model of
                 Nothing -> do putStrLn "UNSAT - success (UNEXPECTED!)."
                 Just _ -> do putStrLn "SAT - counter-example found (EXPECTED)."
+
+    putStrLn "\n============================================================"
+    putStrLn " 5. Finding a solution for multiple linear equations."
+    putStrLn " Program: y1 = 5 * x + 7; y2 = 4 * x + 3; assert(y1 == y2)"
+    putStrLn "============================================================"
+
+    result4 <- verifyProgram progFindSolution $ VarEnv $ Map.fromList [("x", symX)]
+    case result4 of
+        Left err -> do putStrLn $ "Runtime error: " ++ err
+        Right model -> do
+            case model of
+                Nothing -> do putStrLn "UNSAT - failure (UNEXPECTED!)."
+                Just _ -> do putStrLn "SAT - solution found (EXPECTED)."
