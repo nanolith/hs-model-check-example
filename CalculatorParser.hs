@@ -112,6 +112,10 @@ assertStatement = Assert <$> (symbol "assert" *> relationalExpression)
 computeStatement :: Parser (Statement Concrete)
 computeStatement = pure Compute <* symbol "compute"
 
+-- Parse a solve statement.
+solveStatement :: Parser (Statement Concrete)
+solveStatement = pure Solve <* symbol "solve"
+
 -- Parse a statement
 statement :: Parser (Statement Concrete)
 statement =
