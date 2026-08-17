@@ -111,3 +111,8 @@ assert = Assert <$> relationalExpression
 -- Parse a statement
 statement :: Parser (Statement Concrete)
 statement = choice [setStatement , unsetStatement, assume, assert]
+
+-- Run the parser on the given parser function for a single statement.
+parseStatement :: Text
+        -> Either (ParseErrorBundle Text Void) (Statement Concrete)
+parseStatement = runParser (spaceConsumer *> statement <* eof) "<input>"
