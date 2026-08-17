@@ -4,13 +4,12 @@ import Control.Monad (foldM, forM_)
 import GHC.Generics (Generic)
 import Grisette (
     (.==), (./=), (.<), (.<=), (.>), (.>=), (.&&), Default(..), EvalSym(..),
-    Mergeable, Model, FPRoundingMode(RNE), SymBool, SymFP64, fpAdd, fpDiv,
-    fpMul, fpSub, rootStrategy, solve, symFpIsNaN, symNot, toSym, wrapStrategy,
-    z3)
+    Mergeable, Model, SymAlgReal, SymBool, rootStrategy, solve, symNot, toSym,
+    wrapStrategy, z3)
 import qualified Data.Map.Strict as Map
 
 -- Double symbolic type
-type SymDouble = SymFP64
+type SymDouble = SymAlgReal
 
 -- Data tags for supporting concrete and symbolic interpretation
 data Concrete
@@ -18,7 +17,7 @@ data Symbolic
 
 type family Val d = r | r -> d where
     Val Concrete = Double
-    Val Symbolic = SymFP64
+    Val Symbolic = SymDouble
 
 type family Cond d = r | r -> d where
     Cond Concrete = Bool
@@ -188,19 +187,19 @@ instance Domain Concrete where
 
 -- Symbolic domain used for model checking program
 instance Domain Symbolic where
-    literalValue            = toSym
-    addValue                = fpAdd $ toSym RNE
-    subtractValue           = fpSub $ toSym RNE
-    multiplyValue           = fpMul $ toSym RNE
-    divideValue             = fpDiv $ toSym RNE
+    literalValue d          = toSym (toRational d)
+    addValue                = (+)
+    subtractValue           = (-)
+    multiplyValue           = (*)
+    divideValue             = (/)
     equalValue              = (.==)
     notEqualValue           = (./=)
     lessThanValue           = (.<)
     lessThanEqualValue      = (.<=)
     greaterThanValue        = (.>)
     greaterThanEqualValue   = (.>=)
-    isNotNaN v              = symNot (symFpIsNaN v)
-    notEqualZero v          = v ./= toSym (0.0 :: Double)
+    isNotNaN _              = toSym True
+    notEqualZero v          = v ./= 0
     andConditional          = (.&&)
     trueConditional         = toSym True
 
