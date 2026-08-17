@@ -54,7 +54,8 @@ number =
 -- table of operators, in order of precedence.
 operatorTable :: [[Operator Parser (Expression Concrete)]]
 operatorTable =
-      [ [     Prefix (Negate   <$ symbol "-") ]
+      [ [     Prefix (Negate   <$ symbol "-")
+            , Prefix (id       <$ symbol "+") ]
     ,   [     InfixL (Multiply <$ symbol "*")
             , InfixL (Divide   <$ symbol "/") ]
     ,   [     InfixL (Add      <$ symbol "+")
