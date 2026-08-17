@@ -75,10 +75,10 @@ notNaN :: Parser (RelationalExpression Concrete)
 notNaN = NotNaN <$> (symbol "notNaN" *> (parentheses expression <|> term))
 
 -- Parse a relational operation
-parseRelationalOperation ::
+relationalOperation ::
         Parser (Expression Concrete -> Expression Concrete
                     -> RelationalExpression Concrete)
-parseRelationalOperation =
+relationalOperation =
     choice [
           Equal             <$ (symbol "==" <|> symbol "=")
         , NotEqual          <$ (symbol "!=" <|> symbol "/=")
@@ -90,7 +90,7 @@ parseRelationalOperation =
 -- Parse a relational expression
 parseRelationalExpression :: Parser (RelationalExpression Concrete)
 parseRelationalExpression =
-    notNaN <|> (parseRelationalOperation <*> expression <*> expression)
+    notNaN <|> (relationalOperation <*> expression <*> expression)
 
 -- Parse a set statement
 parseSetStatement :: Parser (Statement Concrete)
