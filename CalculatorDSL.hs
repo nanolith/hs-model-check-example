@@ -286,6 +286,14 @@ evalRelationalExpression stmt st =
             (rhs, st2) <- evalExpression ex2 st1
             Right $ (greaterThanEqualValue lhs rhs, st2)
 
+-- Evaluate a mode change
+evalModeChange :: Domain d => EvaluationMode -> CalculatorState d
+        -> Either String (CalculatorState d)
+evalModeChange evalMode st =
+    if mode st /= DefaultMode
+        then Left $ "Mode " ++ (show $ mode st) ++ " already selected."
+        else Right $ st { mode = evalMode }
+
 -- Evaluate a statement
 evalStatement :: Domain d => Statement d -> CalculatorState d
         -> Either String (CalculatorState d)
