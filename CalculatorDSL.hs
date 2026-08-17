@@ -320,7 +320,7 @@ evalStatement stmt st =
                 then Left $ "Mode " ++ (show $ mode st) ++ " already selected."
                 else Right $ st { mode = ComputeMode}
 
-        Solve -> do
+        Solve ->
             if mode st /= DefaultMode
                 then Left $ "Mode " ++ (show $ mode st) ++ " already selected."
                 else Right $ st { mode = SolveMode }
