@@ -109,8 +109,8 @@ assertStatement :: Parser (Statement Concrete)
 assertStatement = Assert <$> relationalExpression
 
 -- Parse a compute statement.
-compute :: Parser (Statement Concrete)
-compute = pure Compute <* symbol "compute"
+computeStatement :: Parser (Statement Concrete)
+computeStatement = pure Compute <* symbol "compute"
 
 -- Parse a statement
 statement :: Parser (Statement Concrete)
