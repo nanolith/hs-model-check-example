@@ -94,7 +94,7 @@ relationalExpression =
 
 -- Parse a set statement
 setStatement :: Parser (Statement Concrete)
-setStatement = Set <$> identifier <* symbol "=" <*> expression
+setStatement = Set <$> (symbol "set" *> identifier) <* symbol "=" <*> expression
 
 -- Parse an unset statement
 unsetStatement :: Parser (Statement Concrete)
