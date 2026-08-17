@@ -98,7 +98,7 @@ setStatement = Set <$> identifier <* symbol "=" <*> expression
 
 -- Parse an unset statement
 unsetStatement :: Parser (Statement Concrete)
-unsetStatement = Unset <$> identifier
+unsetStatement = Unset <$> (symbol "unset" *> identifier)
 
 -- Parse an assume statement
 assume :: Parser (Statement Concrete)
