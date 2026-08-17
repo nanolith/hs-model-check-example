@@ -129,6 +129,7 @@ statement =
         , assumeStatement
         , assertStatement
         , computeStatement
+        , solveStatement
         ]
 
 -- Run the parser on the given parser function for a single statement.
