@@ -108,6 +108,10 @@ assume = Assume <$> relationalExpression
 assert :: Parser (Statement Concrete)
 assert = Assert <$> relationalExpression
 
+-- Parse a compute statement.
+compute :: Parser (Statement Concrete)
+compute = pure Compute <* symbol "compute"
+
 -- Parse a statement
 statement :: Parser (Statement Concrete)
 statement = choice [setStatement, unsetStatement, assume, assert]
