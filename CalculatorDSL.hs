@@ -32,6 +32,7 @@ data EvaluationMode =
     | Verify
 
 deriving stock instance Generic EvaluationMode
+deriving via (Default EvaluationMode) instance Mergeable EvaluationMode
 
 -- Arithmetic expressions
 data Expression d =
