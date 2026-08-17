@@ -107,3 +107,11 @@ parseAssume = Assume <$> parseRelationalExpression
 -- Parse an assert statement
 parseAssert :: Parser (Statement Concrete)
 parseAssert = Assert <$> parseRelationalExpression
+
+parseStatement :: Parser (Statement Concrete)
+parseStatement =
+    choice [
+          parseSetStatement
+        , parseUnsetStatement
+        , parseAssume
+        , parseAssert ]
