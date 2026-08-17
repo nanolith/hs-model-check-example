@@ -101,8 +101,8 @@ unsetStatement :: Parser (Statement Concrete)
 unsetStatement = Unset <$> identifier
 
 -- Parse an assume statement
-parseAssume :: Parser (Statement Concrete)
-parseAssume = Assume <$> relationalExpression
+assume :: Parser (Statement Concrete)
+assume = Assume <$> relationalExpression
 
 -- Parse an assert statement
 parseAssert :: Parser (Statement Concrete)
@@ -113,5 +113,5 @@ parseStatement =
     choice [
           setStatement
         , unsetStatement
-        , parseAssume
+        , assume
         , parseAssert ]
