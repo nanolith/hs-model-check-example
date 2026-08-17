@@ -106,7 +106,7 @@ assumeStatement = Assume <$> (symbol "assume" *> relationalExpression)
 
 -- Parse an assert statement
 assertStatement :: Parser (Statement Concrete)
-assertStatement = Assert <$> relationalExpression
+assertStatement = Assert <$> (symbol "assert" *> relationalExpression)
 
 -- Parse a compute statement.
 computeStatement :: Parser (Statement Concrete)
