@@ -97,8 +97,8 @@ setStatement :: Parser (Statement Concrete)
 setStatement = Set <$> identifier <* symbol "=" <*> expression
 
 -- Parse an unset statement
-parseUnsetStatement :: Parser (Statement Concrete)
-parseUnsetStatement = Unset <$> identifier
+unsetStatement :: Parser (Statement Concrete)
+unsetStatement = Unset <$> identifier
 
 -- Parse an assume statement
 parseAssume :: Parser (Statement Concrete)
@@ -112,6 +112,6 @@ parseStatement :: Parser (Statement Concrete)
 parseStatement =
     choice [
           setStatement
-        , parseUnsetStatement
+        , unsetStatement
         , parseAssume
         , parseAssert ]
