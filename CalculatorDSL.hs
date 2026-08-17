@@ -348,12 +348,14 @@ evalStatementWithTrace stmt st = do
 printTrace :: [Frame Symbolic] -> Model -> IO ()
 printTrace frames model = do
     let concreteFrames = evalSym True model frames
-    putStrLn "\n  Execution Trace (Counterexample Replay):"
+    putStrLn "\n  Execution Trace:"
     putStrLn "  --------------------------------------------------"
     forM_ concreteFrames $ \frame -> do
         putStrLn $ "  [Frame " ++ show (stepNumber frame) ++ "]"
         putStrLn $ "    Statement  : " ++ show (executedStmt frame)
-        putStrLn $ "    Store      : " ++ show (envSnapshot frame)
+        putStrLn $ "    Store      : "
+        forM_ (Map.toList . unVarEnv $ envSnapshot frame) $ \(k, v) -> do
+            putStrLn $ "      * " ++ k ++ " = " ++ show v
         putStrLn $ "    Assertions : " ++ show (assertionsHold frame)
         putStrLn $ "    SafeDiv    : " ++ show (safeDivHolds frame)
     putStrLn "  --------------------------------------------------"
