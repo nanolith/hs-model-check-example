@@ -31,6 +31,7 @@ data EvaluationMode =
     | Solve
     | Verify
 
+deriving stock instance Eq EvaluationMode
 deriving stock instance Generic EvaluationMode
 deriving via (Default EvaluationMode) instance Mergeable EvaluationMode
 deriving via (Default EvaluationMode) instance EvalSym EvaluationMode
