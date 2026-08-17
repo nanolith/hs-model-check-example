@@ -33,6 +33,7 @@ data EvaluationMode =
 
 deriving stock instance Generic EvaluationMode
 deriving via (Default EvaluationMode) instance Mergeable EvaluationMode
+deriving via (Default EvaluationMode) instance EvalSym EvaluationMode
 
 -- Arithmetic expressions
 data Expression d =
