@@ -44,6 +44,7 @@ data Expression d =
     | Subtract (Expression d) (Expression d)
     | Multiply (Expression d) (Expression d)
     | Divide (Expression d) (Expression d)
+    | Negate (Expression d)
 
 deriving instance (Eq (Val d)) => Eq (Expression d)
 deriving instance (Show (Val d)) => Show (Expression d)
@@ -221,35 +222,40 @@ initialState initialEnv = CalculatorState {
 evalExpression :: Domain d => Expression d -> CalculatorState d
         -> Either String (Val d, CalculatorState d)
 evalExpression expr st = case expr of
-  Literal n -> Right (n, st)
+    Literal n -> Right (n, st)
 
-  Variable name ->
-    case Map.lookup name $ unVarEnv $ env st of
-      Just val -> Right (val, st)
-      Nothing  -> Left $ "Scope Error: Variable '" ++ name ++ "' not found."
+    Variable name ->
+        case Map.lookup name $ unVarEnv $ env st of
+            Just val -> Right (val, st)
+            Nothing  ->
+                Left $ "Scope Error: Variable '" ++ name ++ "' not found."
 
-  Add e1 e2 -> do
-    (v1, st1) <- evalExpression e1 st
-    (v2, st2) <- evalExpression e2 st1
-    Right (addValue v1 v2, st2)
+    Add e1 e2 -> do
+        (v1, st1) <- evalExpression e1 st
+        (v2, st2) <- evalExpression e2 st1
+        Right (addValue v1 v2, st2)
 
-  Subtract e1 e2 -> do
-    (v1, st1) <- evalExpression e1 st
-    (v2, st2) <- evalExpression e2 st1
-    Right (subtractValue v1 v2, st2)
+    Subtract e1 e2 -> do
+        (v1, st1) <- evalExpression e1 st
+        (v2, st2) <- evalExpression e2 st1
+        Right (subtractValue v1 v2, st2)
 
-  Multiply e1 e2 -> do
-    (v1, st1) <- evalExpression e1 st
-    (v2, st2) <- evalExpression e2 st1
-    Right (multiplyValue v1 v2, st2)
+    Multiply e1 e2 -> do
+        (v1, st1) <- evalExpression e1 st
+        (v2, st2) <- evalExpression e2 st1
+        Right (multiplyValue v1 v2, st2)
 
-  Divide e1 e2 -> do
-    (v1, st1) <- evalExpression e1 st
-    (v2, st2) <- evalExpression e2 st1
-    let st3 = st2 {
-        safeDivideConditional =
-            andConditional (safeDivideConditional st2) (notEqualZero v2) }
-    Right (divideValue v1 v2, st3)
+    Divide e1 e2 -> do
+        (v1, st1) <- evalExpression e1 st
+        (v2, st2) <- evalExpression e2 st1
+        let st3 = st2 {
+            safeDivideConditional =
+                andConditional (safeDivideConditional st2) (notEqualZero v2) }
+        Right (divideValue v1 v2, st3)
+
+    Negate e1 -> do
+        (v1, st') <- evalExpression e1 st
+        Right (negateValue v1, st')
 
 evalRelationalExpression :: Domain d => RelationalExpression d
         -> CalculatorState d -> Either String (Cond d, CalculatorState d)
