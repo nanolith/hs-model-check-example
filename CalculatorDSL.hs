@@ -24,6 +24,13 @@ type family Cond d = r | r -> d where
     Cond Concrete = Bool
     Cond Symbolic = SymBool
 
+-- Evaluation modes
+data EvaluationMode =
+      Default
+    | Compute
+    | Solve
+    | Verify
+
 -- Arithmetic expressions
 data Expression d =
       Literal (Val d)
