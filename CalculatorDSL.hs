@@ -80,6 +80,7 @@ data Statement d =
     | Assert (RelationalExpression d)
     | Compute
     | Solve
+    | Verify
 
 deriving instance (Eq (Expression d), Eq (RelationalExpression d)) =>
     Eq (Statement d)
@@ -326,6 +327,8 @@ evalStatement stmt st =
         Compute -> evalModeChange ComputeMode st
 
         Solve -> evalModeChange SolveMode st
+
+        Verify -> evalModeChange VerifyMode st
 
 -- evaluate a statement with a trace
 evalStatementWithTrace ::  Domain d => Statement d -> CalculatorState d
