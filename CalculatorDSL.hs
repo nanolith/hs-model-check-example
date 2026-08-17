@@ -315,7 +315,7 @@ evalStatement stmt st =
             Right $ st' { assertions =
                                 andConditional (assertions st') assertion }
 
-        Compute -> do
+        Compute ->
             if mode st /= DefaultMode
                 then Left $ "Mode " ++ (show $ mode st) ++ " already selected."
                 else Right $ st { mode = ComputeMode}
