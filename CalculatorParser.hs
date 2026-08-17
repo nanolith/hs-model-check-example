@@ -116,6 +116,10 @@ computeStatement = pure Compute <* symbol "compute"
 solveStatement :: Parser (Statement Concrete)
 solveStatement = pure Solve <* symbol "solve"
 
+-- Parse a verify statement.
+verifyStatement :: Parser (Statement Concrete)
+verifyStatement = pure Verify <* symbol "verify"
+
 -- Parse a statement
 statement :: Parser (Statement Concrete)
 statement =
