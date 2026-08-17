@@ -325,10 +325,7 @@ evalStatement stmt st =
 
         Compute -> evalModeChange ComputeMode st
 
-        Solve ->
-            if mode st /= DefaultMode
-                then Left $ "Mode " ++ (show $ mode st) ++ " already selected."
-                else Right $ st { mode = SolveMode }
+        Solve -> evalModeChange SolveMode st
 
 -- evaluate a statement with a trace
 evalStatementWithTrace ::  Domain d => Statement d -> CalculatorState d
