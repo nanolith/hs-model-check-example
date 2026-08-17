@@ -79,6 +79,7 @@ data Statement d =
     | Assume (RelationalExpression d)
     | Assert (RelationalExpression d)
     | Compute
+    | Solve
 
 deriving instance (Eq (Expression d), Eq (RelationalExpression d)) =>
     Eq (Statement d)
@@ -318,6 +319,11 @@ evalStatement stmt st =
             if mode st /= DefaultMode
                 then Left $ "Mode " ++ (show $ mode st) ++ " already selected."
                 else Right $ st { mode = ComputeMode}
+
+        Solve -> do
+            if mode st /= DefaultMode
+                then Left $ "Mode " ++ (show $ mode st) ++ " already selected."
+                else Right $ st { mode = SolveMode }
 
 -- evaluate a statement with a trace
 evalStatementWithTrace ::  Domain d => Statement d -> CalculatorState d
