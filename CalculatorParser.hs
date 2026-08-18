@@ -127,7 +127,6 @@ statement :: Parser (Statement Concrete)
 statement =
     choice [
           setStatement
-        , unsetStatement
         , assumeStatement
         , assertStatement
         , computeStatement
