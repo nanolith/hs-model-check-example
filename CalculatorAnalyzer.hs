@@ -56,3 +56,9 @@ programInitialState =
         . Map.fromList
         . map (\x -> (x, ssym (fromString x) :: SymDouble))
         . freeVarsProgram
+
+-- Is this program a compute program?
+isProgramCompute :: Program d -> Bool
+isProgramCompute (Program (Compute : _)) = True
+isProgramCompute (Program (_ : xs)) = isProgramCompute (Program xs)
+isProgramCompute _ = False
