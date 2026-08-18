@@ -37,65 +37,44 @@ deriving via (Default EvaluationMode) instance Mergeable EvaluationMode
 deriving via (Default EvaluationMode) instance EvalSym EvaluationMode
 
 -- Arithmetic expressions
-data Expression d =
-      Literal (Val d)
+data Expression =
+      Literal Double
     | Variable String
-    | Add (Expression d) (Expression d)
-    | Subtract (Expression d) (Expression d)
-    | Multiply (Expression d) (Expression d)
-    | Divide (Expression d) (Expression d)
-    | Negate (Expression d)
-
-deriving instance (Eq (Val d)) => Eq (Expression d)
-deriving instance (Show (Val d)) => Show (Expression d)
-deriving stock instance Generic (Expression d)
-deriving via (Default (Expression Symbolic)) instance
-    Mergeable (Expression Symbolic)
-deriving via (Default (Expression Symbolic)) instance
-    EvalSym (Expression Symbolic)
+    | Add Expression Expression
+    | Subtract Expression Expression
+    | Multiply Expression Expression
+    | Divide Expression Expression
+    | Negate Expression
+    deriving stock (Eq, Show, Generic)
+    deriving (EvalSym, Mergeable) via (Default Expression)
 
 -- Relational expressions
-data RelationalExpression d =
-      Equal (Expression d) (Expression d)
-    | NotEqual (Expression d) (Expression d)
-    | NotNaN (Expression d)
-    | LessThan (Expression d) (Expression d)
-    | LessThanEqual (Expression d) (Expression d)
-    | GreaterThan (Expression d) (Expression d)
-    | GreaterThanEqual (Expression d) (Expression d)
-
-deriving instance (Eq (Expression d)) => Eq (RelationalExpression d)
-deriving instance (Show (Expression d)) => Show (RelationalExpression d)
-deriving stock instance Generic (RelationalExpression d)
-deriving via (Default (RelationalExpression Symbolic)) instance
-    Mergeable (RelationalExpression Symbolic)
-deriving via (Default (RelationalExpression Symbolic)) instance
-    EvalSym (RelationalExpression Symbolic)
+data RelationalExpression =
+      Equal Expression Expression
+    | NotEqual Expression Expression
+    | NotNaN Expression
+    | LessThan Expression Expression
+    | LessThanEqual Expression Expression
+    | GreaterThan Expression Expression
+    | GreaterThanEqual Expression Expression
+    deriving (Eq, Show, Generic)
+    deriving (EvalSym, Mergeable) via (Default RelationalExpression)
 
 -- Statements
-data Statement d =
-      Set String (Expression d)
-    | Assume (RelationalExpression d)
-    | Assert (RelationalExpression d)
+data Statement =
+      Set String Expression
+    | Assume RelationalExpression
+    | Assert RelationalExpression
     | Compute
     | Solve
     | Verify
-
-deriving instance (Eq (Expression d), Eq (RelationalExpression d)) =>
-    Eq (Statement d)
-deriving instance (Show (Expression d), Show (RelationalExpression d)) =>
-    Show (Statement d)
-deriving stock instance Generic (Statement d)
-deriving via (Default (Statement Symbolic)) instance
-    Mergeable (Statement Symbolic)
-deriving via (Default (Statement Symbolic)) instance
-    EvalSym (Statement Symbolic)
+    deriving (Eq, Show, Generic)
+    deriving (EvalSym, Mergeable) via (Default Statement)
 
 -- Program
-data Program d = Program [Statement d]
-
-deriving instance (Eq (Statement d)) => Eq (Program d)
-deriving instance (Show (Statement d)) => Show (Program d)
+data Program = Program [Statement]
+    deriving (Eq, Show, Generic)
+    deriving (EvalSym, Mergeable) via (Default Program)
 
 -- Variable environment
 newtype VarEnv v = VarEnv { unVarEnv :: Map.Map String v }
@@ -113,15 +92,15 @@ instance EvalSym v => EvalSym (VarEnv v) where
 -- Execution frame for model checking
 data Frame d = Frame {
     stepNumber     :: Int
-  , executedStmt   :: Statement d
+  , executedStmt   :: Statement
   , envSnapshot    :: VarEnv (Val d)
   , assertionsHold :: Cond d
   , safeDivHolds   :: Cond d
   } deriving stock (Generic)
 
-deriving stock instance (Eq (Val d), Eq (Cond d), Eq (Statement d)) =>
+deriving stock instance (Eq (Val d), Eq (Cond d), Eq Statement) =>
     Eq (Frame d)
-deriving stock instance (Show (Val d), Show (Cond d), Show (Statement d)) =>
+deriving stock instance (Show (Val d), Show (Cond d), Show Statement) =>
     Show (Frame d)
 deriving via (Default (Frame Symbolic)) instance Mergeable (Frame Symbolic)
 deriving via (Default (Frame Symbolic)) instance EvalSym (Frame Symbolic)
@@ -218,10 +197,10 @@ initialState initialEnv = CalculatorState {
   }
 
 -- Evaluate an expression
-evalExpression :: Domain d => Expression d -> CalculatorState d
+evalExpression :: Domain d => Expression -> CalculatorState d
         -> Either String (Val d, CalculatorState d)
 evalExpression expr st = case expr of
-    Literal n -> Right (n, st)
+    Literal n -> Right (literalValue n, st)
 
     Variable name ->
         case Map.lookup name $ unVarEnv $ env st of
@@ -256,7 +235,7 @@ evalExpression expr st = case expr of
         (v1, st') <- evalExpression e1 st
         Right (negateValue v1, st')
 
-evalRelationalExpression :: Domain d => RelationalExpression d
+evalRelationalExpression :: Domain d => RelationalExpression
         -> CalculatorState d -> Either String (Cond d, CalculatorState d)
 evalRelationalExpression stmt st =
     case stmt of
@@ -303,7 +282,7 @@ evalModeChange evalMode st =
         else Right $ st { mode = evalMode }
 
 -- Evaluate a statement
-evalStatement :: Domain d => Statement d -> CalculatorState d
+evalStatement :: Domain d => Statement -> CalculatorState d
         -> Either String (CalculatorState d)
 evalStatement stmt st =
     case stmt of
@@ -329,7 +308,7 @@ evalStatement stmt st =
         Verify -> evalModeChange VerifyMode st
 
 -- evaluate a statement with a trace
-evalStatementWithTrace ::  Domain d => Statement d -> CalculatorState d
+evalStatementWithTrace ::  Domain d => Statement -> CalculatorState d
         -> Either String (CalculatorState d)
 evalStatementWithTrace stmt st = do
     st' <- evalStatement stmt st
@@ -359,18 +338,18 @@ printTrace frames model = do
     putStrLn "  --------------------------------------------------"
 
 -- Run a calculator program
-evalProgram :: Domain d => Program d -> CalculatorState d
+evalProgram :: Domain d => Program -> CalculatorState d
         -> Either String (CalculatorState d)
 evalProgram (Program stmts) st = do
     foldM (flip evalStatementWithTrace) st stmts
 
 -- Run the native program
-runNative :: Program Concrete -> VarEnv (Val Concrete)
+runNative :: Program -> VarEnv (Val Concrete)
         -> Either String (CalculatorState Concrete)
 runNative prog initialEnv = evalProgram prog (initialState initialEnv)
 
 -- Verify a program
-verifyProgram :: Program Symbolic -> VarEnv (Val Symbolic)
+verifyProgram :: Program -> VarEnv (Val Symbolic)
         -> IO (Either String (Maybe Model))
 verifyProgram prog initialEnv = do
     case evalProgram prog (initialState initialEnv) of

@@ -52,7 +52,7 @@ number =
     lexeme (try L.float <|> (fromIntegral <$> (L.decimal :: Parser Integer)))
 
 -- table of operators, in order of precedence.
-operatorTable :: [[Operator Parser (Expression Concrete)]]
+operatorTable :: [[Operator Parser Expression]]
 operatorTable =
       [ [     Prefix (Negate   <$ symbol "-")
             , Prefix (id       <$ symbol "+") ]
@@ -62,24 +62,23 @@ operatorTable =
             , InfixL (Subtract <$ symbol "-") ] ]
 
 -- expression parser
-expression :: Parser (Expression Concrete)
+expression :: Parser Expression
 expression = makeExprParser term operatorTable
 
 -- term parser
-term :: Parser (Expression Concrete)
+term :: Parser Expression
 term =
         parentheses expression
     <|> (Literal <$> number)
     <|> (Variable <$> identifier)
 
 -- parse a "not NaN" expression
-notNaN :: Parser (RelationalExpression Concrete)
+notNaN :: Parser RelationalExpression
 notNaN = NotNaN <$> (symbol "notNaN" *> (parentheses expression <|> term))
 
 -- Parse a relational operation
 relationalOperation ::
-        Parser (Expression Concrete -> Expression Concrete
-                    -> RelationalExpression Concrete)
+        Parser (Expression -> Expression -> RelationalExpression)
 relationalOperation =
     choice [
           Equal             <$ (symbol "==" <|> symbol "=")
@@ -90,36 +89,36 @@ relationalOperation =
         , GreaterThan       <$ symbol ">"]
 
 -- Parse a relational expression
-relationalExpression :: Parser (RelationalExpression Concrete)
+relationalExpression :: Parser RelationalExpression
 relationalExpression =
     notNaN <|> (relationalOperation <*> expression <*> expression)
 
 -- Parse a set statement
-setStatement :: Parser (Statement Concrete)
+setStatement :: Parser Statement
 setStatement = Set <$> (symbol "set" *> identifier) <* symbol "=" <*> expression
 
 -- Parse an assume statement
-assumeStatement :: Parser (Statement Concrete)
+assumeStatement :: Parser Statement
 assumeStatement = Assume <$> (symbol "assume" *> relationalExpression)
 
 -- Parse an assert statement
-assertStatement :: Parser (Statement Concrete)
+assertStatement :: Parser Statement
 assertStatement = Assert <$> (symbol "assert" *> relationalExpression)
 
 -- Parse a compute statement.
-computeStatement :: Parser (Statement Concrete)
+computeStatement :: Parser Statement
 computeStatement = pure Compute <* symbol "compute"
 
 -- Parse a solve statement.
-solveStatement :: Parser (Statement Concrete)
+solveStatement :: Parser Statement
 solveStatement = pure Solve <* symbol "solve"
 
 -- Parse a verify statement.
-verifyStatement :: Parser (Statement Concrete)
+verifyStatement :: Parser Statement
 verifyStatement = pure Verify <* symbol "verify"
 
 -- Parse a statement
-statement :: Parser (Statement Concrete)
+statement :: Parser Statement
 statement =
     choice [
           setStatement
@@ -132,6 +131,6 @@ statement =
 
 -- Run the parser on the given parser function for a single statement.
 parseStatement :: String -> Text
-        -> Either (ParseErrorBundle Text Void) (Statement Concrete)
+        -> Either (ParseErrorBundle Text Void) Statement
 parseStatement src input =
     runParser (spaceConsumer *> statement <* eof) src input

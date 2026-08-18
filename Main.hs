@@ -4,7 +4,7 @@ import CalculatorDSL
 import qualified Data.Map.Strict as Map
 
 -- Program A: Valid algebraic equivalence (y = x + x, assert y == 2 * x)
-progValid :: Domain d => Program d
+progValid :: Program
 progValid = Program
   [ Assume $ NotNaN $ Variable "x"
   , Set "y" (Add (Variable "x") (Variable "x"))
@@ -14,14 +14,14 @@ progValid = Program
   ]
 
 -- Program B: Divide-by-zero vulnerability
-progDivZero :: Domain d => Program d
+progDivZero :: Program
 progDivZero = Program
   [ Set "denom" (Subtract (Variable "x") (Literal (literalValue 5.0)))
   , Set "res"   (Divide (Literal (literalValue 100.0)) (Variable "denom"))
   ]
 
 -- Program C: Invalid invariant (y = 2 * x, assert y == x + 3.0)
-progAssertFail :: Domain d => Program d
+progAssertFail :: Program
 progAssertFail = Program
   [ Set "y" (Multiply (Literal (literalValue 2.0)) (Variable "x"))
   , Assert $ Equal (Variable "y") $
@@ -29,7 +29,7 @@ progAssertFail = Program
   ]
 
 -- Program D: Solve for x and y in (y = 5 * x + 7; y = 4 * x + 3)
-progFindSolution :: Domain d => Program d
+progFindSolution :: Program
 progFindSolution = Program
   [ Set "y1" (Add (Multiply (Literal (literalValue 5.0)) (Variable "x"))
                   (Literal (literalValue 7.0)))
