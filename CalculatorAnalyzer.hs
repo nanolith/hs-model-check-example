@@ -12,3 +12,13 @@ freeVarsEx (Subtract e1 e2) = freeVarsEx e1 `Set.union` freeVarsEx e2
 freeVarsEx (Multiply e1 e2) = freeVarsEx e1 `Set.union` freeVarsEx e2
 freeVarsEx (Divide e1 e2) = freeVarsEx e1 `Set.union` freeVarsEx e2
 freeVarsEx (Negate e1) = freeVarsEx e1
+
+-- Collect the set of free variables in a relational expression
+freeVarsRel :: RelationalExpression d -> Set.Set String
+freeVarsRel (Equal e1 e2) = freeVarsEx e1 `Set.union` freeVarsEx e2
+freeVarsRel (NotEqual e1 e2) = freeVarsEx e1 `Set.union` freeVarsEx e2
+freeVarsRel (NotNaN e1) = freeVarsEx e1
+freeVarsRel (LessThan e1 e2) = freeVarsEx e1 `Set.union` freeVarsEx e2
+freeVarsRel (LessThanEqual e1 e2) = freeVarsEx e1 `Set.union` freeVarsEx e2
+freeVarsRel (GreaterThan e1 e2) = freeVarsEx e1 `Set.union` freeVarsEx e2
+freeVarsRel (GreaterThanEqual e1 e2) = freeVarsEx e1 `Set.union` freeVarsEx e2
