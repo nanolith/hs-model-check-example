@@ -46,5 +46,16 @@ main = do
                     putStrLn $ "\nerror: " ++ err
                 Right model -> do
                     case model of
-                        Nothing -> do putStrLn "UNSAT"
+                        Nothing -> do
+                            putStrLn "UNSAT"
+                            if isProgramCompute prog
+                                then do
+                                    case runNative prog emptyEnv of
+                                        Left err -> do
+                                            putStrLn $
+                                                "\nruntime error: " ++ err
+                                        Right st -> do
+                                            putStrLn $
+                                                "\nresult: " ++ show st
+                                else pure ()
                         Just _ -> do putStrLn "SAT"
