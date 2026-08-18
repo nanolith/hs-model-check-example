@@ -131,6 +131,7 @@ statement =
         ]
 
 -- Run the parser on the given parser function for a single statement.
-parseStatement :: Text
+parseStatement :: String -> Text
         -> Either (ParseErrorBundle Text Void) (Statement Concrete)
-parseStatement = runParser (spaceConsumer *> statement <* eof) "<input>"
+parseStatement src input =
+    runParser (spaceConsumer *> statement <* eof) src input
