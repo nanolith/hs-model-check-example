@@ -23,7 +23,8 @@ executable hs-model-check-demo
         , text
     hs-source-dirs:   .
     other-modules:
-          CalculatorDSL
+        , CalculatorAnalyzer
+        , CalculatorDSL
         , CalculatorParser
     default-language: Haskell2010
     default-extensions:
