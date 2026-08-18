@@ -39,3 +39,8 @@ freeVarsAccStmt (freeSet, definedSet) (Assert rel) =
         newVars = vars Set.\\ definedSet
     in (freeSet `Set.union` newVars, definedSet)
 freeVarsAccStmt (freeSet, definedSet) _ = (freeSet, definedSet)
+
+-- Get the free variables for a program.
+freeVarsProgram :: Program d -> [String]
+freeVarsProgram (Program stmts) =
+    Set.toList $ fst $ foldl freeVarsAccStmt (Set.empty, Set.empty) stmts
