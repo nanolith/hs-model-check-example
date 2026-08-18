@@ -91,7 +91,10 @@ relationalOperation =
 -- Parse a relational expression
 relationalExpression :: Parser RelationalExpression
 relationalExpression =
-    notNaN <|> (relationalOperation <*> expression <*> expression)
+        notNaN
+    <|> (\l op r -> l `op` r) <$> expression
+                              <*> relationalOperation
+                              <*> expression
 
 -- Parse a set statement
 setStatement :: Parser Statement
