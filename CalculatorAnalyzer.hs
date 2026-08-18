@@ -22,3 +22,20 @@ freeVarsRel (LessThan e1 e2) = freeVarsEx e1 `Set.union` freeVarsEx e2
 freeVarsRel (LessThanEqual e1 e2) = freeVarsEx e1 `Set.union` freeVarsEx e2
 freeVarsRel (GreaterThan e1 e2) = freeVarsEx e1 `Set.union` freeVarsEx e2
 freeVarsRel (GreaterThanEqual e1 e2) = freeVarsEx e1 `Set.union` freeVarsEx e2
+
+-- Accumulate free variables and defined variables given a statement
+freeVarsAccStmt :: (Set.Set String, Set.Set String) -> Statement d
+        -> (Set.Set String, Set.Set String)
+freeVarsAccStmt (freeSet, definedSet) (Set var e) =
+    let vars    = freeVarsEx e
+        newVars = vars Set.\\ definedSet
+    in (freeSet `Set.union` newVars, Set.insert var definedSet)
+freeVarsAccStmt (freeSet, definedSet) (Assume rel) =
+    let vars    = freeVarsRel rel
+        newVars = vars Set.\\ definedSet
+    in (freeSet `Set.union` newVars, definedSet)
+freeVarsAccStmt (freeSet, definedSet) (Assert rel) =
+    let vars    = freeVarsRel rel
+        newVars = vars Set.\\ definedSet
+    in (freeSet `Set.union` newVars, definedSet)
+freeVarsAccStmt (freeSet, definedSet) _ = (freeSet, definedSet)
