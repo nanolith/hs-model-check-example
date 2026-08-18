@@ -1,6 +1,9 @@
 module CalculatorAnalyzer where
 
 import CalculatorDSL
+import Data.String (fromString)
+import Grisette (ssym)
+import qualified Data.Map.Strict as Map
 import qualified Data.Set as Set
 
 -- Collect the set of free variables in an expression.
@@ -44,3 +47,12 @@ freeVarsAccStmt (freeSet, definedSet) _ = (freeSet, definedSet)
 freeVarsProgram :: Program d -> [String]
 freeVarsProgram (Program stmts) =
     Set.toList $ fst $ foldl freeVarsAccStmt (Set.empty, Set.empty) stmts
+
+-- Create the initial symbolic state for a program
+programInitialState :: Program Symbolic -> CalculatorState Symbolic
+programInitialState =
+    initialState
+        . VarEnv
+        . Map.fromList
+        . map (\x -> (x, ssym (fromString x) :: SymDouble))
+        . freeVarsProgram
