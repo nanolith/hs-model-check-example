@@ -185,6 +185,10 @@ instance Domain Symbolic where
     andConditional          = (.&&)
     trueConditional         = toSym True
 
+-- Empty environment
+emptyEnv :: Domain d => VarEnv (Val d)
+emptyEnv = VarEnv $ Map.fromList []
+
 -- Define the initial state for a calculator.
 initialState :: Domain d => VarEnv (Val d) -> CalculatorState d
 initialState initialEnv = CalculatorState {
