@@ -75,7 +75,6 @@ deriving via (Default (RelationalExpression Symbolic)) instance
 -- Statements
 data Statement d =
       Set String (Expression d)
-    | Unset String
     | Assume (RelationalExpression d)
     | Assert (RelationalExpression d)
     | Compute
@@ -312,15 +311,6 @@ evalStatement stmt st =
             (val, st') <- evalExpression expr st
             Right $ st' { env =
                             VarEnv $ Map.insert name val $ unVarEnv $ env st' }
-
-        Unset name ->
-            if Map.member name $ unVarEnv $ env st
-                then Right $ st { env =
-                                    VarEnv $ Map.delete name
-                                        $ unVarEnv $ env st }
-                else Left
-                        $ "Scope Error: Cannot delete nonexistent variable '"
-                                ++ name ++ "'."
 
         Assume rel -> do
             (assumption, st') <- evalRelationalExpression rel st
