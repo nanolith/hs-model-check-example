@@ -98,10 +98,6 @@ relationalExpression =
 setStatement :: Parser (Statement Concrete)
 setStatement = Set <$> (symbol "set" *> identifier) <* symbol "=" <*> expression
 
--- Parse an unset statement
-unsetStatement :: Parser (Statement Concrete)
-unsetStatement = Unset <$> (symbol "unset" *> identifier)
-
 -- Parse an assume statement
 assumeStatement :: Parser (Statement Concrete)
 assumeStatement = Assume <$> (symbol "assume" *> relationalExpression)
